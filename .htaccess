@@ -1,0 +1,26 @@
+
+# Disable redirects with trailing slashes when URLs match the directory paths
+DirectorySlash Off
+
+
+
+
+
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+
+
+
+
+
+## -/-/-/-/-/-/
+## ~ DELEGATE TO THE NODE SERVER
+## -/-/-/-/-/-/
+RewriteRule ^(.*) http://localhost:9996/$1 [P,L]
+
+
+
+
+
+</IfModule>
