@@ -12,24 +12,40 @@ let bodyParser = require( "body-parser" );
 // Our custom imports
 let log = require( "./lib/logger.js" );
 let dbms = require( "./lib/dbms.js" );
-let crm = require( "./lib/crm.js" );
+let crm = require( "./lib/crm.js" )( { autoRenewAPIKey: true } );
 
 
 
 /*
  * Constants declarations
  */
-let httpPort = 9996;
+let httpPort = process.env.HTTP_PORT || 9996;
 
 /*
- * Set up the HTTP server and the routes
+ * -/-/-/-/-/-/
+ * Middleware
+ * -/-/-/-/-/-/
+ */
+// An HTTP body parser for the type "application/json"
+let jsonParser = bodyParser.json()
+// An HTTP body parser for the type "application/x-www-form-urlencoded"
+let urlencodedParser = bodyParser.urlencoded( { extended: true } )
+// Allow Pre-flight request
+async function allowPreFlightRequest ( req, res ) {
+	res.header( "Access-Control-Allow-Origin", req.headers.origin );
+	res.header( "Access-Control-Allow-Credentials", "true" );
+	res.header( "Access-Control-Allow-Methods", "OPTIONS, POST" );
+	res.header( "Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With" );
+	res.sendStatus( 200 );
+	// res.send( 200 );
+}
+
+/*
+ * -/-/-/-/-/
+ * Set up the router and the routes
+ * -/-/-/-/-/
  */
 let router = express.Router();
-// Create an HTTP body parser for the type "application/json"
-let jsonParser = bodyParser.json()
-// Create an HTTP body parser for the type "application/x-www-form-urlencoded"
-let urlencodedParser = bodyParser.urlencoded( { extended: true } )
-
 // Plugging in the middleware
 router.use( urlencodedParser );
 router.use( jsonParser );
@@ -107,23 +123,36 @@ router.get( "/someone", async function ( req, res ) {
 
 } );
 
-router.options( "/people", async function ( req, res ) {
-	res.header( "Access-Control-Allow-Origin", req.headers.origin );
-	res.header( "Access-Control-Allow-Credentials", "true" );
-	res.header( "Access-Control-Allow-Methods", "OPTIONS, POST" );
-	res.header( "Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With" );
-	res.sendStatus( 200 );
-	// res.send( 200 );
-} );
-
+/*
+ * -/-/-/-/-/
+ * Add a person
+ * -/-/-/-/-/
+ */
+router.options( "/people", allowPreFlightRequest );
 router.post( "/people", async function ( req, res ) {
 
 	// res.header( "Access-Control-Allow-Origin", "*" );
 	res.header( "Access-Control-Allow-Origin", req.headers.origin );
 	res.header( "Access-Control-Allow-Credentials", "true" );
 
+	// Pull the data from the request
+	let client = req.body.client;
+	let interest = req.body.interest;
+	let phoneNumber = req.body.phoneNumber;
+	if (
+		! client
+			||
+		! interest
+			||
+		! phoneNumber
+	) {
+		res.json( { message: "Please provide the client, person's phone number and interest." } );
+		res.end();
+		return;
+	}
+
 	// Respond back
-	res.json( { message: "Will add a new potential customer." } );
+	res.json( { message: "The person will be added." } );
 	res.end();
 
 	/*
@@ -132,72 +161,36 @@ router.post( "/people", async function ( req, res ) {
 	let databaseClient = await dbms.getClient();
 	let database = databaseClient.db( "cupid" );
 	let collection = database.collection( "people" );
-	// Pull the data from the request
-	let phoneNumber = req.body.phoneNumber;
-	let project = req.body.project;
-
-	// But first, check if they're any existing records that match the customer
-	let existingRecords = await collection.find( {
-		phoneNumber,
-		project
-	} ).toArray();
-	if ( existingRecords.length )
-		return;
 
 	// Okay, now we can go ahead and ingest the customer record
 	var record = {
-		createdOn: new Date(),
-		phoneNumber,
-		// client,
-		project,
-		numberIsValid: false,
-		verifiedByOTP: false
+		meta: {
+			createdOn: new Date(),
+			identityVerified: false
+		},
+		actions: { },
+		client,
+		interest,
+		phoneNumber
 	}
-	await collection.insertOne( record );
+	try {
+		await collection.insertOne( record );
+	}
+	catch ( e ) {
+		log.toUs( {
+			context: "Adding a new person to the database",
+			message: `[${ e.code }] ${ e.name } – ${ e.errmsg }`
+		} );
+	}
 
 } );
 
 
-router.options( "/people/:phoneNumber/:project", async function ( req, res ) {
-	res.header( "Access-Control-Allow-Origin", req.headers.origin );
-	res.header( "Access-Control-Allow-Credentials", "true" );
-	res.header( "Access-Control-Allow-Methods", "OPTIONS, POST" );
-	res.header( "Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With" );
-	res.sendStatus( 200 );
-	// res.send( 200 );
-} );
-router.post( "/people/:phoneNumber/:project", async function ( req, res ) {
-
-	// res.header( "Access-Control-Allow-Origin", "*" );
-	res.header( "Access-Control-Allow-Origin", req.headers.origin );
-	res.header( "Access-Control-Allow-Credentials", "true" );
-
-	// Respond back
-	res.json( { message: "Will update potential customer." } );
-	res.end();
-
-	// If there is anything to update in the first place
-	if ( ! Object.keys( req.body ).length )
-		return;
-
-	// Pull data from the request
-	let phoneNumber = req.params.phoneNumber;
-	let project = req.params.project;
-
-	/*
-	 * Update the potential customer ( if it exists )
-	 */
-	let databaseClient = await dbms.getClient();
-	let database = databaseClient.db( "cupid" );
-	let collection = database.collection( "people" );
-	let record = await collection.updateOne(
-		{ phoneNumber, project },
-		{ $set: req.body }
-	);
-	log.toConsole( record.result );
-
-} );
-
+/*
+ * -/-/-/-/-/
+ * List all the people we know of
+ * -/-/-/-/-/
+ */
 router.get( "/people", async function ( req, res ) {
 
 	let databaseClient = await dbms.getClient();
@@ -209,10 +202,60 @@ router.get( "/people", async function ( req, res ) {
 
 } );
 
+/*
+ * -/-/-/-/-/
+ * Verify a person
+ * -/-/-/-/-/
+ */
+router.options( "/people/verify", allowPreFlightRequest );
+router.post( "/people/verify", async function ( req, res ) {
+
+	// res.header( "Access-Control-Allow-Origin", "*" );
+	res.header( "Access-Control-Allow-Origin", req.headers.origin );
+	res.header( "Access-Control-Allow-Credentials", "true" );
+
+	let client = req.body.client;
+	let interest = req.body.interest;
+	let phoneNumber = req.body.phoneNumber;
+
+	if (
+		! client
+			||
+		! interest
+			||
+		! phoneNumber
+	) {
+		res.json( { message: "Please provide the client, person's phone number and interest." } );
+		res.end();
+		return;
+	}
+
+	// Respond back
+	res.json( { message: "The person will be verified." } );
+	res.end();
+
+	/*
+	 * Verify the person
+	 */
+	let databaseClient = await dbms.getClient();
+	let database = databaseClient.db( "cupid" );
+	let collection = database.collection( "people" );
+
+	let record = await collection.updateOne(
+		{ client, interest, phoneNumber },
+		{ $set: { "meta.identityVerified": true } }
+	);
+
+} );
 
 
 
 
+/*
+ * -/-/-/-/-/
+ * Set up the server and plug-in the router
+ * -/-/-/-/-/
+ */
 let httpServer = express().use( router ).listen( httpPort, function (  ) {
 	if ( process.env.NODE_ENV != "production" )
 		log.toConsole( "HTTP server is listening at " + httpPort + "." );
