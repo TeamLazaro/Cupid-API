@@ -66,7 +66,7 @@ router.get( "/someone", async function ( req, res ) {
 
 	let customer;
 	try {
-		customer = await crm.getCustomerByUid( uid )
+		customer = await crm.getCustomerByExternalId( uid )
 	}
 	catch ( e ) {
 		res.status( 404 );
