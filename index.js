@@ -126,6 +126,7 @@ router.get( "/someone", async function ( req, res ) {
 /*
  * -/-/-/-/-/
  * Add a person
+ *	The source of the person can be from the Website or the CRM.
  * -/-/-/-/-/
  */
 router.options( "/people", allowPreFlightRequest );
@@ -139,6 +140,12 @@ router.post( "/people", async function ( req, res ) {
 	let client = req.body.client || req.query.client;
 	let interest = req.body.interest || req.query.interest;
 	let phoneNumber = req.body.phoneNumber || req.query.phoneNumber;
+		// Who initiated this request?
+	let initiator = req.body.initiator || req.query.initiator;
+		let externalId = req.body.externalId || req.query.externalId;
+		let internalId = req.body.internalId || req.query.internalId;
+
+	// If the essential details aren't provided, respond appropriately
 	if (
 		! client
 			||
@@ -150,13 +157,27 @@ router.post( "/people", async function ( req, res ) {
 		res.end();
 		return;
 	}
+	// If the person is coming from the CRM, and the ids are not provided
+	if (
+		initiator == "crm"
+			&&
+		(
+			! externalId
+				||
+			! internalId
+		)
+	) {
+		res.json( { message: "Please provide the record's internal and external ID." } );
+		res.end();
+		return;
+	}
 
-	// Respond back
+	// Respond back pre-emptively
 	res.json( { message: "The person will be added." } );
 	res.end();
 
 	/*
-	 * Add the potential customer
+	 * Add the person
 	 */
 	let databaseClient = await dbms.getClient();
 	let database = databaseClient.db( "cupid" );
@@ -170,22 +191,44 @@ router.post( "/people", async function ( req, res ) {
 	// Okay, now we can go ahead and ingest the customer record
 	var record = {
 		meta: {
-			createdOn: new Date(),
-			identityVerified: false
+			createdOn: new Date()
 		},
 		actions: { },
 		client,
 		interest,
 		phoneNumber
 	}
+	if ( initiator == "crm" ) {
+		Object.assign( record.meta, {
+			source: "CRM",
+			identityVerified: true,
+			onCRM: true,
+			crmInternalId: internalId,
+			crmExternalId: externalId,
+		} );
+	}
 	try {
 		await collection.insertOne( record );
 	}
 	catch ( e ) {
-		log.toUs( {
-			context: "Adding a new person to the database",
-			message: `[${ e.code }] ${ e.name } – ${ e.errmsg }`
-		} );
+		if ( initiator == "crm" ) {
+			// If the record already exists, then simply mark the person as "verified"
+				// since the request came from the crm, meaning it should be verified
+			if ( e.code == 11000 )
+				await collection.updateOne( {
+					client, interest, phoneNumber
+				}, { $set: {
+					"meta.identityVerified": true,
+					"meta.onCRM": true,
+					"meta.crmInternalId": internalId,
+					"meta.crmExternalId": externalId
+				} } );
+		}
+		else
+			await log.toUs( {
+				context: "Adding a new person to the database",
+				message: `[${ e.code }] ${ e.name } – ${ e.errmsg }`
+			} );
 	}
 
 } );
