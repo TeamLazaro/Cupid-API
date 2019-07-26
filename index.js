@@ -162,6 +162,11 @@ router.post( "/people", async function ( req, res ) {
 	let database = databaseClient.db( "cupid" );
 	let collection = database.collection( "people" );
 
+	// Sanitize and assemble the data
+	phoneNumber = phoneNumber.trim();
+	if ( ! phoneNumber.includes( "+" ) )
+		phoneNumber = "+" + phoneNumber;
+
 	// Okay, now we can go ahead and ingest the customer record
 	var record = {
 		meta: {
