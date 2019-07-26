@@ -136,9 +136,9 @@ router.post( "/people", async function ( req, res ) {
 	res.header( "Access-Control-Allow-Credentials", "true" );
 
 	// Pull the data from the request
-	let client = req.body.client;
-	let interest = req.body.interest;
-	let phoneNumber = req.body.phoneNumber;
+	let client = req.body.client || req.query.client;
+	let interest = req.body.interest || req.query.interest;
+	let phoneNumber = req.body.phoneNumber || req.query.phoneNumber;
 	if (
 		! client
 			||
