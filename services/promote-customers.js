@@ -96,6 +96,8 @@ const slack = new WebClient( slackConfiguration.accessToken );
 						+ "\n"
 						+ person.name
 						+ "\n"
+						+ "UID: " + person.meta.crmExternalId
+						+ "\n"
 						+ "- ~".repeat( lengthOfName / 2 )
 						+ "\n"
 						+ "_" + yearsOfExperience + " years experience_"
