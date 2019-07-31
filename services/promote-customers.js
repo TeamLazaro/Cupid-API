@@ -72,10 +72,8 @@ const slack = new WebClient( slackConfiguration.accessToken );
 
 		let image;
 		let imageURL;
-		if ( person.images.length ) {
-			image = new URL( person.images[ 0 ] );
-			imageURL = `${ image.protocol }//${ image.host }${ image.pathname }`;
-		}
+		if ( person.images.length )
+			imageURL = person.images[ 0 ];
 
 		let linkedInPlace;
 		if ( person.onTheInteret )
@@ -88,15 +86,19 @@ const slack = new WebClient( slackConfiguration.accessToken );
 		 * B. Prepare the message
 		 */
 		let messageBody = [ ];
+		if ( imageURL )
+			messageBody.push( {
+				type: "image",
+				image_url: `https://slack-imgs.com/?c=1&o1=ro&url=${ encodeURIComponent( imageURL ) }`,
+				alt_text: "person's face or lack of"
+			} );
+
 		messageBody.push( {
 			type: "section",
 			text: {
 				type: "mrkdwn",
-				text: "`"
-						+ "\n"
+				text: "\n"
 						+ person.name
-						+ "\n"
-						+ "UID: " + person.meta.crmExternalId
 						+ "\n"
 						+ "- ~".repeat( lengthOfName / 2 )
 						+ "\n"
@@ -105,13 +107,6 @@ const slack = new WebClient( slackConfiguration.accessToken );
 						+ person.career[ 0 ]
 			}
 		} )
-
-		if ( imageURL )
-			messageBody[ 0 ].accessory = {
-				type: "image",
-				image_url: imageURL,
-				alt_text: "person's face or lack of"
-			};
 
 		messageBody.push( { type: "divider" } );
 
