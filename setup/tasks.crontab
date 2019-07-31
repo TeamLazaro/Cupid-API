@@ -23,3 +23,14 @@ MAILTO="adi@lazaro.in"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
+# The following commented lines will be added automatically in the deployment step
+# See post-deploy.sh for reference
+SHELL=/bin/sh
+MAILTO="adi@lazaro.in"
+
+# Promote new customers
+9		*		*		*		*	promote-customers.js > promote-customers.log 2>&1
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
