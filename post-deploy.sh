@@ -29,7 +29,8 @@ pm2 reload "cupid"
 # -/-/-/-/-
 if [ -f setup/tasks.crontab ]; then
 	# Set permissive permissions for the scheduled task scripts
-	chmod 744 */scheduled-tasks/*
+	# chmod 744 */scheduled-tasks/*
+	chmod 744 services/*
 	# Build a cumulative, consolidated crontab
 	TASKS_DIR="`pwd`/services"
 	LOG_DIR="`pwd`/environment/logs"
