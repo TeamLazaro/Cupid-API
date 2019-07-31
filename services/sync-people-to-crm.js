@@ -35,6 +35,8 @@ let crm = require( `${ rootDir }/lib/crm.js` )();
 	let peopleRecords = await collection.find( {
 			// has not been operated on
 		"actions.syncToCRM": { $ne: true },
+			// is not spam
+		"meta.spam": { $ne: true },
 			// does not have an error
 		"meta.error": { $ne: true },
 			// was added in the last two hours
