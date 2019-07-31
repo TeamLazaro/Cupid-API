@@ -1,0 +1,13 @@
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
+# The following commented lines will be added automatically in the deployment step
+# See post-deploy.sh for reference
+SHELL=/bin/sh
+MAILTO="adi@lazaro.in"
+
+# Research new people every hour
+1		*		*		*		*	research-people.js > research-people.log 2>&1
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
