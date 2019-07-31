@@ -30,7 +30,7 @@ let people = require( `${ rootDir }/lib/people.js` );
 			// has not been operated on
 		"actions.research": { $ne: true },
 			// does not have an error
-		"meta.error": { $ne: true }
+		"meta.error": { $ne: true },
 			// was added in the last two hours
 		"meta.createdOn": { $gte: timestamp__CoupleHoursAgo },
 	} ).sort( { "meta.createdOn": 1 } );
@@ -89,7 +89,7 @@ let people = require( `${ rootDir }/lib/people.js` );
 		let phoneNumbers = [ person.phoneNumber ].concat( ( person.contact && person.contact.otherPhoneNumbers ) || [ ] );
 		let emailAddresses = [ person.emailAddress ].concat( ( person.contact && person.contact.otherEmailAddresses ) || [ ] );
 		try {
-			informationOnPerson = await people.getDataOnPerson( phoneNumbers, emailAddresses );
+			informationOnPeople = await people.getDataOnPerson( phoneNumbers, emailAddresses );
 		}
 		catch ( e ) {
 				// Log the error
@@ -101,21 +101,26 @@ let people = require( `${ rootDir }/lib/people.js` );
 			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
 			continue;
 		}
-		if ( Array.isArray( informationOnPerson ) )
+		if (
+			informationOnPeople.people.length === 0
+				||
+			informationOnPeople.people.length > 1
+		)
 			await log.toUs( {
 				context: `Querying information on a person ( id ${ person._id.toString() } )`,
-				message: "More than one match found for the person."
+				message: `No match found or more than one match found for the person.\nSearch Id: ${ informationOnPeople.searchId }`
 			} );
 		else {
-			// person = Object.assign( person, informationOnPerson );
+			// person = Object.assign( person, informationOnPeople.people[ 0 ] );
 			await collection.updateOne( {
 				_id: person._id
-			}, { $set: informationOnPerson } );
+			}, { $set: informationOnPeople.people[ 0 ] } );
 		}
 
 		await collection.updateOne( { _id: person._id }, { $set: {
 			"actions.gatherInformation": true,
-			"meta.fetchedInformationOn": new Date()
+			"meta.fetchedInformationOn": new Date(),
+			"meta.piplSearchId": informationOnPeople.searchId
 		} } );
 
 		/*
