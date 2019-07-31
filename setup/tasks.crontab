@@ -11,3 +11,15 @@ MAILTO="adi@lazaro.in"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
+# The following commented lines will be added automatically in the deployment step
+# See post-deploy.sh for reference
+SHELL=/bin/sh
+MAILTO="adi@lazaro.in"
+
+# Add poeple as customers to the CRM
+5		*		*		*		*	sync-people-to-crm.js > sync-people-to-crm.log 2>&1
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
