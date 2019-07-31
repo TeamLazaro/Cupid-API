@@ -48,6 +48,9 @@ const slack = new WebClient( slackConfiguration.accessToken );
 		"meta.createdOn": { $gte: timestamp__CoupleHoursAgo },
 			// is on the CRM
 		"meta.onCRM": true,
+			// minimum info requirements
+		"name": { $exists: true }
+		"career": { $exists: true, $ne: [ ] }
 	} ).sort( { "meta.createdOn": 1 } );
 
 	/*
