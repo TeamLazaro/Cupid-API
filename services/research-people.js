@@ -52,8 +52,8 @@ let people = require( `${ rootDir }/lib/people.js` );
 		catch ( e ) {
 				// Log the error
 			await log.toUs( {
-				context: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit`,
-				message: context + "\n```\n" + e.stack + "\n```"
+				context: context,
+				message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit` + "\n```\n" + e.stack + "\n```"
 			} );
 				// Update the person record with the error flag
 			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
@@ -63,8 +63,8 @@ let people = require( `${ rootDir }/lib/people.js` );
 				// Log the error
 			let error = phoneNumberInformation.error;
 			log.toUs( {
-				context: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit`,
-				message: `${ context }\n[${ e.code }] ${ e.info }`
+				context: context,
+				message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit\n[${ e.code }] ${ e.info }`
 			} );
 				// Update the person record with the error flag
 			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
@@ -94,8 +94,8 @@ let people = require( `${ rootDir }/lib/people.js` );
 		catch ( e ) {
 				// Log the error
 			await log.toUs( {
-				context: `Querying information on a person ( id ${ person._id.toString() } )`,
-				message: context + "\n```\n" + e.stack + "\n```"
+				context: context,
+				message: `Querying information on a person ( id ${ person._id.toString() } )` + "\n```\n" + e.stack + "\n```"
 			} );
 				// Update the person record with the error flag
 			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
@@ -107,8 +107,8 @@ let people = require( `${ rootDir }/lib/people.js` );
 			informationOnPeople.people.length > 1
 		)
 			await log.toUs( {
-				context: `Querying information on a person ( id ${ person._id.toString() } )`,
-				message: `No match found or more than one match found for the person.\nSearch Id: ${ informationOnPeople.searchId }`
+				context: context,
+				message: `Querying information on a person ( id ${ person._id.toString() } )\nNo match found or more than one match found for the person.\nSearch Id: ${ informationOnPeople.searchId }`
 			} );
 		else {
 			// person = Object.assign( person, informationOnPeople.people[ 0 ] );
