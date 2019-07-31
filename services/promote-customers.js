@@ -49,7 +49,7 @@ const slack = new WebClient( slackConfiguration.accessToken );
 			// is on the CRM
 		"meta.onCRM": true,
 			// minimum info requirements
-		"name": { $exists: true }
+		"name": { $exists: true },
 		"career": { $exists: true, $ne: [ ] }
 	} ).sort( { "meta.createdOn": 1 } );
 
