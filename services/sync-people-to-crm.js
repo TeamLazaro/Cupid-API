@@ -129,7 +129,8 @@ let crm = require( `${ rootDir }/lib/crm.js` )();
 		 */
 		let otherInformation = crm.getOtherInformationAsString( person );
 		try {
-			await crm.updateCustomerByInternalId( person.client, customer.internalId, { Description: otherInformation } );
+			if ( otherInformation )
+				await crm.updateCustomerByInternalId( person.client, customer.internalId, { Description: otherInformation } );
 			await collection.updateOne( { _id: person._id }, { $set: { "actions.syncToCRM": true } } );
 		}
 		catch ( e ) {
