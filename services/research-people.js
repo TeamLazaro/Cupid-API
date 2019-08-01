@@ -101,15 +101,18 @@ let people = require( `${ rootDir }/lib/people.js` );
 			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
 			continue;
 		}
-		if (
-			informationOnPeople.people.length === 0
-				||
-			informationOnPeople.people.length > 1
-		)
+		if ( informationOnPeople.people.length === 0 ) {
 			await log.toUs( {
 				context: context,
-				message: `Querying information on a person ( id ${ person._id.toString() } )\nNo match found or more than one match found for the person.\nSearch Id: ${ informationOnPeople.searchId }`
+				message: `Querying information on a person ( id ${ person._id.toString() } )\nNo information found on the person.\nSearch Id: ${ informationOnPeople.searchId }`
 			} );
+		}
+		else if ( informationOnPeople.people.length > 1 ) {
+			await log.toUs( {
+				context: context,
+				message: `Querying information on a person ( id ${ person._id.toString() } )\nMore than one match found for the person.\nSearch Id: ${ informationOnPeople.searchId }`
+			} );
+		}
 		else {
 			// person = Object.assign( person, informationOnPeople.people[ 0 ] );
 			await collection.updateOne( {
