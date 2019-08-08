@@ -6,8 +6,8 @@
 SHELL=/bin/sh
 MAILTO="adi@lazaro.in"
 
-# Research new people every hour
-1		*		*		*		*	research-people.js > research-people.log 2>&1
+# Research new people
+31		*		*		*		*	research-people.js > research-people.log 2>&1
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
@@ -19,7 +19,7 @@ SHELL=/bin/sh
 MAILTO="adi@lazaro.in"
 
 # Add poeple as customers to the CRM
-5		*		*		*		*	sync-people-to-crm.js > sync-people-to-crm.log 2>&1
+35		*		*		*		*	sync-people-to-crm.js > sync-people-to-crm.log 2>&1
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
@@ -31,6 +31,6 @@ SHELL=/bin/sh
 MAILTO="adi@lazaro.in"
 
 # Promote new customers
-9		*		*		*		*	promote-customers.js > promote-customers.log 2>&1
+39		*		*		*		*	promote-customers.js > promote-customers.log 2>&1
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
