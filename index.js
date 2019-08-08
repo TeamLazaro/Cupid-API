@@ -12,7 +12,7 @@ let bodyParser = require( "body-parser" );
 // Our custom imports
 let log = require( "./lib/logger.js" );
 let dbms = require( "./lib/dbms.js" );
-let crm = require( "./lib/crm.js" )( { autoRenewAPIKey: true } );
+let crm = require( "./lib/crm.js" );
 
 
 

@@ -14,7 +14,7 @@ let rootDir = __dirname + "/..";
 // Our custom imports
 let log = require( `${ rootDir }/lib/logger.js` );
 let dbms = require( `${ rootDir }/lib/dbms.js` );
-let crm = require( `${ rootDir }/lib/crm.js` )();
+let crm = require( `${ rootDir }/lib/crm.js` );
 
 
 
