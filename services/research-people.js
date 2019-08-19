@@ -65,7 +65,7 @@ let people = require( `${ rootDir }/lib/people.js` );
 				let error = phoneNumberInformation.error;
 				log.toUs( {
 					context: context,
-					message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit\n[${ e.code }] ${ e.info }`
+					message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit\n[${ error.code }] ${ error.info }`
 				} );
 					// Update the person record with the error flag
 				await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
