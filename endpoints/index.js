@@ -11,6 +11,7 @@ let { router, middleware } = require( "../lib/routing.js" );
 
 
 
+router = require( "./v1/status.js" )( router, middleware );
 router = require( "./get-people.js" )( router, middleware );
 router = require( "./add-person.js" )( router, middleware );
 router = require( "./verify-person.js" )( router, middleware );
