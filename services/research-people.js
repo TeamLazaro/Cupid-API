@@ -45,43 +45,46 @@ let people = require( `${ rootDir }/lib/people.js` );
 		/*
 		 * A. Verify the phone number
 		 */
-		let phoneNumberInformation;
-		try {
-			phoneNumberInformation = await telephone.isPhoneNumberValid( person.phoneNumber );
-		}
-		catch ( e ) {
-				// Log the error
-			await log.toUs( {
-				context: context,
-				message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit` + "\n```\n" + e.stack + "\n```"
-			} );
-				// Update the person record with the error flag
-			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
-			continue;
-		}
-		if ( phoneNumberInformation.success === false ) {
-				// Log the error
-			let error = phoneNumberInformation.error;
-			log.toUs( {
-				context: context,
-				message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit\n[${ e.code }] ${ e.info }`
-			} );
-				// Update the person record with the error flag
-			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
-			continue;
-		}
-		if ( ! phoneNumberInformation.valid ) {
+		if ( ! person.actions.validatePhoneNumber ) {
+			let phoneNumberInformation;
+			try {
+				phoneNumberInformation = await telephone.isPhoneNumberValid( person.phoneNumber );
+			}
+			catch ( e ) {
+					// Log the error
+				await log.toUs( {
+					context: context,
+					message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit\n${ e.message }` + "\n```\n" + e.stack + "\n```"
+				} );
+					// Update the person record with the error flag
+				await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
+				continue;
+			}
+			if ( phoneNumberInformation.success === false ) {
+					// Log the error
+				let error = phoneNumberInformation.error;
+				log.toUs( {
+					context: context,
+					message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit\n[${ e.code }] ${ e.info }`
+				} );
+					// Update the person record with the error flag
+				await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
+				continue;
+			}
+			if ( ! phoneNumberInformation.valid ) {
+				await collection.updateOne( { _id: person._id }, { $set: {
+					"meta.spam": true,
+					"meta.phoneNumberIsValid": false,
+					"actions.validatePhoneNumber": true,
+					"actions.research": true
+				} } );
+				continue;
+			}
 			await collection.updateOne( { _id: person._id }, { $set: {
-				"meta.spam": true,
-				"meta.phoneNumberIsValid": false,
-				"actions.validatePhoneNumber": true,
-				"actions.research": true
+				"meta.phoneNumberIsValid": true,
+				"actions.validatePhoneNumber": true
 			} } );
-			continue;
 		}
-		await collection.updateOne( { _id: person._id }, { $set: {
-			"actions.validatePhoneNumber": true
-		} } );
 
 		/*
 		 * B. Search for information
@@ -95,7 +98,7 @@ let people = require( `${ rootDir }/lib/people.js` );
 				// Log the error
 			await log.toUs( {
 				context: context,
-				message: `Querying information on a person ( id ${ person._id.toString() } )` + "\n```\n" + e.stack + "\n```"
+				message: `Querying information on a person ( id ${ person._id.toString() } )\n${ e.message }` + "\n```\n" + e.stack + "\n```"
 			} );
 				// Update the person record with the error flag
 			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
