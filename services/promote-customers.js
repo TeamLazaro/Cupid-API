@@ -27,6 +27,33 @@ const slack = new WebClient( slackConfiguration.accessToken );
 
 
 
+/*
+ *
+ * Handle un-caught/handled exceptions and errors
+ *
+ */
+async function shutdownGracefully ( e ) {
+	let context = "There was an uncaught error or unhandled rejection";
+	let message = e.toString();
+	if ( e.stack )
+		message += "\n```\n" + e.stack + "\n```";
+	await log.toUs( {
+		context: context,
+		message: message
+	} );
+	console.error( context + "\n" + message );
+	setTimeout( function () {
+		console.log( "Terminating process right now." );
+		process.exit( 1 );
+	}, 1000 );
+}
+process.on( "uncaughtException", shutdownGracefully );
+process.on( "unhandledRejection", shutdownGracefully );
+
+
+
+
+
 ( async function main () {
 
 	let context = "Routine introduction of people to the salepeople.";
