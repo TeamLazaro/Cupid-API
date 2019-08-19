@@ -90,7 +90,7 @@ process.on( "unhandledRejection", shutdownGracefully );
 			if ( phoneNumberInformation.success === false ) {
 					// Log the error
 				let error = phoneNumberInformation.error;
-				log.toUs( {
+				await log.toUs( {
 					context: context,
 					message: `Determining if the phone number of the person ( id ${ person._id.toString() } ) is legit\n[${ error.code }] ${ error.info }`
 				} );
