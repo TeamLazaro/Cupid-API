@@ -99,7 +99,7 @@ process.on( "unhandledRejection", shutdownGracefully );
 
 		let image;
 		let imageURL;
-		if ( person.images.length )
+		if ( person.images && person.images.length )
 			imageURL = person.images[ 0 ];
 
 		let linkedInPlace;
