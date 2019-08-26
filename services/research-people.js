@@ -132,16 +132,19 @@ process.on( "unhandledRejection", shutdownGracefully );
 			continue;
 		}
 		if ( informationOnPeople.people.length === 0 ) {
-			await log.toUs( {
-				context: context,
-				message: `Querying information on a person ( id ${ person._id.toString() } )\nNo information found on the person.\nSearch Id: ${ informationOnPeople.searchId }`
-			} );
+			// await log.toUs( {
+			// 	context: context,
+			// 	message: `Querying information on a person ( id ${ person._id.toString() } )\nNo information found on the person.\n${ e.message }`
+			// } );
 		}
 		else if ( informationOnPeople.people.length > 1 ) {
-			await log.toUs( {
-				context: context,
-				message: `Querying information on a person ( id ${ person._id.toString() } )\nMore than one match found for the person.\nSearch Id: ${ informationOnPeople.searchId }`
-			} );
+			// await log.toUs( {
+			// 	context: context,
+			// 	message: `Querying information on a person ( id ${ person._id.toString() } )\nMore than one match found for the person.\n${ e.message }`
+			// } );
+			await collection.updateOne( { _id: person._id }, { $set: {
+				"meta.pipl.searchPointers": informationOnPeople.people.map( person => person[ "@search_pointer" ] )
+			} } );
 		}
 		else {
 			// person = Object.assign( person, informationOnPeople.people[ 0 ] );
@@ -152,8 +155,7 @@ process.on( "unhandledRejection", shutdownGracefully );
 
 		await collection.updateOne( { _id: person._id }, { $set: {
 			"actions.gatherInformation": true,
-			"meta.fetchedInformationOn": new Date(),
-			"meta.piplSearchId": informationOnPeople.searchId
+			"meta.fetchedInformationOn": new Date()
 		} } );
 
 		/*
