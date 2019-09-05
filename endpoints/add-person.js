@@ -44,7 +44,9 @@ function main ( router, middleware ) {
 			// Who initiated this request?
 		let initiator = req.body.initiator || req.query.initiator;
 			let externalId = req.body.externalId || req.query.externalId;
+				externalId = externalId && externalId.trim();
 			let internalId = req.body.internalId || req.query.internalId;
+				internalId = internalId && internalId.trim();
 
 		// If the essential details aren't provided, respond appropriately
 		if (
