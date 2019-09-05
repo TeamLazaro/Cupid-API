@@ -111,7 +111,7 @@ process.on( "unhandledRejection", shutdownGracefully );
 			let otherInformation = crm.getOtherInformationAsString( person );
 			try {
 				await crm.updateCustomerByInternalId( person.client, customer.internalId, {
-					Description: `${ otherInformation }\n\n${ customer.Description }`
+					Description: `${ otherInformation }\n\n${ customer.Description || "" }`
 				} );
 				await collection.updateOne( { _id: person._id }, { $set: { "actions.syncToCRM": true } } );
 			}
