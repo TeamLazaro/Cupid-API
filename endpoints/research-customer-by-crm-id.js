@@ -18,6 +18,8 @@ let rootDir = __dirname + "/..";
 let axios = require( "axios" );
 let qs = require( "qs" );
 // Our custom imports
+let dbms = require( `${ rootDir }/lib/dbms.js` );
+let datetime = require( `${ rootDir }/lib/datetime.js` );
 let crm = require( `${ rootDir }/lib/crm.js` );
 
 
@@ -30,72 +32,37 @@ function main ( router, middleware ) {
 
 	router.get( "/someone", async function ( req, res ) {
 
-		/*
-		 * 1. First, fetch the customer from the CRM, based on the given UID
-		 */
-		let uid = req.query.uid;
-		if ( ! uid ) {
+		let crmExternalId = req.query.uid;
+
+		if ( ! crmExternalId ) {
 			res.status( 404 );
-			res.json( { message: "Please provide the UID of the customer." } );
+			res.json( { message: "Please provide the external Id of the customer." } );
 			res.end();
 			return;
 		}
 
-		let customer;
-		try {
-			customer = await crm.getCustomerByExternalId( uid );
-		}
-		catch ( e ) {
-			res.status( 404 );
+		// Fetch the customer from Cupid's database
+		let databaseClient = await dbms.getClient();
+		let database = databaseClient.db( "cupid" );
+		let collection = database.collection( "people" );
+
+		let person = await collection.findOne( { "meta.crmExternalId": crmExternalId } );
+
+		if ( ! person ) {
 			res.json( {
-				message: `Could not find a customer with the UID ${ uid }.`,
-				e: e.message
+				code: 404,
+				message: "Could not find any information on the customer."
 			} );
 			res.end();
 			return;
 		}
 
-		/*
-		 * 2. Now, query the person with the phone number(s) and email address(es)
-		 */
-		let phoneNumbers = [
-			customer[ "Phone" ],
-			customer[ "Mobile" ],
-			customer[ "Home_Phone" ],
-			customer[ "Other_Phone" ],
-			customer[ "Asst_Phone" ]
-		]
-			.filter( number => number )
-			.map( number => ({ number }) );
+		// Make the "date of birth" field human-readable
+		if ( person.dateOfBirth )
+			person.dateOfBirth = datetime.formatTimestamp( person.dateOfBirth, "d/m/Y" );
 
-		let emailAddresses = [
-			customer[ "Email" ],
-			customer[ "Secondary_Email" ]
-		]
-			.filter( email => email )
-			.map( email => ({ address: email }) );
-
-		let response;
-		try {
-			response = await axios.post( "https://api.pipl.com/search/", qs.stringify( {
-				key: "bbnpv2fw7rc7swd95e4cfdmw",
-				person: JSON.stringify( {
-					phones: phoneNumbers,
-					emails: emailAddresses
-				} )
-			} ) );
-		}
-		catch ( e ) {
-			res.status( 404 );
-			res.json( {
-				message: `Could not find a customer with the UID ${ uid }.`,
-				e: e.message
-			} );
-			res.end();
-			return;
-		}
-
-		res.json( { data: response.data } );
+		// Return the person
+		res.json( { code: 200, data: { person } } );
 		res.end();
 
 	} );
