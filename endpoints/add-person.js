@@ -41,6 +41,7 @@ function main ( router, middleware ) {
 		let client = req.body.client || req.query.client;
 		let interest = req.body.interest || req.query.interest;
 		let phoneNumber = req.body.phoneNumber || req.query.phoneNumber;
+		let clientId = req.body.clientId || req.query.clientId;
 			// Who initiated this request?
 		let initiator = req.body.initiator || req.query.initiator;
 			let externalId = req.body.externalId || req.query.externalId;
@@ -108,6 +109,8 @@ function main ( router, middleware ) {
 			interest,
 			phoneNumber
 		}
+		if ( clientId )
+			record.meta.clientIds = [ clientId ];
 		if ( initiator == "crm" ) {
 			Object.assign( record.meta, {
 				source: "CRM",
@@ -121,10 +124,11 @@ function main ( router, middleware ) {
 			await collection.insertOne( record );
 		}
 		catch ( e ) {
-			if ( initiator == "crm" ) {
-				// If the record already exists, then simply mark the person as "verified"
-					// since the request came from the crm, meaning it should be verified
-				if ( e.code == 11000 )
+			// If the record already exists
+			if ( e.code == 11000 ) {
+				// If the request came from the CRM, we assume it's "verified"
+				if ( initiator == "crm" ) {
+					// Hence, simply mark the person as "verified"
 					await collection.updateOne( {
 						client, interest, phoneNumber
 					}, { $set: {
@@ -133,6 +137,19 @@ function main ( router, middleware ) {
 						"meta.crmInternalId": internalId,
 						"meta.crmExternalId": externalId
 					} } );
+				}
+				// If a client Id is present, then add it to the list
+				else if ( clientId ) {
+					await collection.updateOne( {
+						client, interest, phoneNumber
+					}, { $addToSet: { "meta.clientIds": clientId } } );
+					// Restrict the number of client ids to the 10 most recent
+					// await collection.updateOne( {
+					// 	client, interest, phoneNumber
+					// }, { $push: {
+					// 	"meta.clientIds": { $each: [ ], $slice: -10 }
+					// } } );
+				}
 			}
 			else
 				await log.toUs( {
