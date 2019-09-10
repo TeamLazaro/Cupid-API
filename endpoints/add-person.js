@@ -130,7 +130,7 @@ function main ( router, middleware ) {
 				if ( initiator == "crm" ) {
 					// Hence, simply mark the person as "verified"
 					await collection.updateOne( {
-						client, interest, phoneNumber
+						client, phoneNumber
 					}, { $set: {
 						"meta.identityVerified": true,
 						"meta.onCRM": true,
@@ -141,11 +141,11 @@ function main ( router, middleware ) {
 				// If a client Id is present, then add it to the list
 				else if ( clientId ) {
 					await collection.updateOne( {
-						client, interest, phoneNumber
+						client, phoneNumber
 					}, { $addToSet: { "meta.clientIds": clientId } } );
 					// Restrict the number of client ids to the 10 most recent
 					// await collection.updateOne( {
-					// 	client, interest, phoneNumber
+					// 	client, phoneNumber
 					// }, { $push: {
 					// 	"meta.clientIds": { $each: [ ], $slice: -10 }
 					// } } );
