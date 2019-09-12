@@ -144,11 +144,11 @@ function main ( router, middleware ) {
 						client, phoneNumber
 					}, { $addToSet: { "meta.clientIds": clientId } } );
 					// Restrict the number of client ids to the 10 most recent
-					// await collection.updateOne( {
-					// 	client, phoneNumber
-					// }, { $push: {
-					// 	"meta.clientIds": { $each: [ ], $slice: -10 }
-					// } } );
+					await collection.updateOne( {
+						client, phoneNumber
+					}, { $push: {
+						"meta.clientIds": { $each: [ ], $slice: -10 }
+					} } );
 				}
 			}
 			else
