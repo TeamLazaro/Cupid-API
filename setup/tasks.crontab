@@ -22,15 +22,3 @@ MAILTO="adi@lazaro.in"
 35		*		*		*		*	sync-people-to-crm.js > sync-people-to-crm.log 2>&1
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
-
-# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
-
-# The following commented lines will be added automatically in the deployment step
-# See post-deploy.sh for reference
-SHELL=/bin/sh
-MAILTO="adi@lazaro.in"
-
-# Promote new customers
-39		*		*		*		*	promote-customers.js > promote-customers.log 2>&1
-
-# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
