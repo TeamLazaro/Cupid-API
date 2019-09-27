@@ -7,7 +7,7 @@ module.exports = main;
 
 
 // Constants
-let rootDir = __dirname + "/..";
+let rootDir = __dirname + "/../..";
 
 /*
  *

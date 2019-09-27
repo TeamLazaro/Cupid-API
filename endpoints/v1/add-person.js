@@ -7,7 +7,7 @@ module.exports = main;
 
 
 // Constants
-let rootDir = __dirname + "/..";
+let rootDir = __dirname + "/../..";
 
 /*
  *
@@ -41,6 +41,7 @@ function main ( router, middleware ) {
 		let client = req.body.client || req.query.client;
 		let interest = req.body.interest || req.query.interest;
 		let phoneNumber = req.body.phoneNumber || req.query.phoneNumber;
+		// The Analytics Id
 		let clientId = req.body.clientId || req.query.clientId;
 			// Who initiated this request?
 		let initiator = req.body.initiator || req.query.initiator;
