@@ -21,11 +21,12 @@ let environmentDir = `${ rootDir }/environment`;
  */
 function main ( router, middleware ) {
 
-	router.get( "/v1/status", async function ( req, res ) {
+	router.all( "/v1/status", async function ( req, res ) {
 
 		res.json( {
 			code: 200,
-			message: "Cupid is okay."
+			message: "Cupid is okay.",
+			method: req.method
 		} );
 		res.end();
 
