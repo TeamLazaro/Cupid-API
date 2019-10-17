@@ -68,7 +68,13 @@ function main ( router, middleware ) {
 		/*
 		 * Add the person
 		 */
-		await person.get();
+		try {
+			await person.get();
+		}
+		catch ( e ) {
+			return;
+		}
+
 		person
 			.hasDeviceIds( deviceId )
 			.isCalled( name )
