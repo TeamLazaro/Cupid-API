@@ -19,6 +19,7 @@ router = require( "./v2/get-person.js" )( router, middleware );
 router = require( "./v2/add-person.js" )( router, middleware );
 router = require( "./v2/verify-person.js" )( router, middleware );
 router = require( "./v2/update-person.js" )( router, middleware );
+router = require( "./v2/hooks/post-call.js" )( router, middleware );
 router = require( "./research-customer-by-crm-id.js" )( router, middleware );
 router = require( "./v1/report-customer-allocation.js" )( router, middleware );
 router = require( "./v1/report-customer-concluded-meetings.js" )( router, middleware );
