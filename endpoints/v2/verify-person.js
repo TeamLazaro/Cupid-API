@@ -53,7 +53,10 @@ function main ( router, middleware ) {
 		// Iterate through all the provided phone numbers
 		for ( let phoneNumber of phoneNumbers ) {
 			let person = new Person( client, phoneNumber );
-			await person.get();
+			try {
+				await person.get();
+			}
+			catch ( e ) {}
 			// If a person with the phone number is not found,
 				// skip to the next phone number
 			if ( ! person._id )
