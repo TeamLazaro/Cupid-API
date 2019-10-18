@@ -17,6 +17,7 @@ let rootDir = __dirname + "/../../..";
 // Our custom imports
 let log = require( `${ rootDir }/lib/logger.js` );
 let Call = require( `${ rootDir }/lib/entities/providers/call/Call.js` );
+let Analytics = require( `${ rootDir }/lib/entities/providers/analytics/Analytics.js` );
 let Client = require( `${ rootDir }/lib/entities/Client.js` );
 let Person = require( `${ rootDir }/lib/entities/Person.js` );
 
@@ -99,6 +100,7 @@ function main ( router, middleware ) {
 		let person = new Person( client.name, phoneNumber )
 						.cameFrom( "Phone", sourcePoint )
 
+		let personAlreadyExists = false;
 		try {
 			await person.add();
 		}
@@ -108,6 +110,43 @@ function main ( router, middleware ) {
 					context: `Processing the Log of a Call`,
 					message: `Error outside domain logic:\n${ e.message }`
 				} );
+			personAlreadyExists = true;
+		}
+
+
+
+		/* ------------------------------------- \
+		 * 5. Track this activity for Analytics
+		 \-------------------------------------- */
+		// A. Get the person's Ids ( if available )
+		await person.get( { id: 1, deviceIds: 1 } );
+		let personId = person.id;
+		let personDeviceId = person.deviceIds && person.deviceIds[ 0 ];
+
+		// B. Iterate over all the registered analytics providers
+		let analyticsProviders = client.providers.analytics || [ ];
+		for ( let provider of analyticsProviders ) {
+			let Service = Analytics.getService( provider.name );
+			let tracker = new Service( provider.api, personId, personDeviceId );
+			// C. Log the activity ( and conversion if required )
+			try {
+				// Simply log the phone call
+				await tracker.logPhoneCall( callData );
+
+				// Log a "conversion" **if** the person **did not** already exist
+				if ( ! personAlreadyExists ) {
+					let conversionURLFragment = `phone/${ call.agentName || call.agentPhoneNumber || "missed" }`;
+					await tracker.logConversion( conversionURLFragment, {
+						sourceMedium: "phone"
+					} );
+				}
+			}
+			catch ( e ) {
+				await log.toUs( {
+					context: `Logging a call analytics service "${ provider.name }"`,
+					message: `Error outside domain logic:\n${ e.message }`
+				} );
+			}
 		}
 
 	} );
