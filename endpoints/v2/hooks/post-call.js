@@ -72,21 +72,21 @@ function main ( router, middleware ) {
 		 * 3. Interpret the call log
 		 \--------------------------- */
 		let callData = Call.parseLog( provider, callLog );
-		let agent;
-		let agentName;
 		if ( callData.missed )
-			agentName = null;
+			callData.agentName = null;
 		else {
-			agent = client.people.find(
+			let agent = client.people.find(
 				person => person.phoneNumber == callData.agentPhoneNumber
 			);
 			if ( agent )
-				agentName = agent.name;
-			else
+				callData.agentName = agent.name;
+			else {
 				await log.toUs( {
 					context: `Processing the Log of a Call`,
 					message: `Agent with the phone number ${ callData.agentPhoneNumber } was not found.\nPerson called from the number ${ callData.phoneNumber }`
 				} );
+				callData.agentName = callData.agentPhoneNumber;
+			}
 		}
 
 
@@ -95,8 +95,9 @@ function main ( router, middleware ) {
 		 * 4. Add a Person if not already in the Database
 		 \------------------------------------------------ */
 		let phoneNumber = callData.phoneNumber;
+		let sourcePoint = callData.agentName;
 		let person = new Person( client.name, phoneNumber )
-						.cameFrom( "Phone", agentName )
+						.cameFrom( "Phone", sourcePoint )
 
 		try {
 			await person.add();
