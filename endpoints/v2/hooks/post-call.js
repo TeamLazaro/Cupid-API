@@ -97,7 +97,7 @@ function main ( router, middleware ) {
 		 \------------------------------------------------ */
 		let phoneNumber = callData.phoneNumber;
 		let sourcePoint = callData.agentName;
-		let person = new Person( client.name, phoneNumber )
+		let person = new Person( client.slugName, phoneNumber )
 						.cameFrom( "Phone", sourcePoint )
 
 		let personAlreadyExists = false;
