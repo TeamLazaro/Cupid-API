@@ -38,7 +38,7 @@ function main ( router, middleware ) {
 		res.header( "Access-Control-Allow-Credentials", "true" );
 
 		// Pull the data from the request
-		let client = req.query.client;
+		let client = req.query.client.toLowerCase();
 		let phoneNumber = req.query.phoneNumber;
 
 
