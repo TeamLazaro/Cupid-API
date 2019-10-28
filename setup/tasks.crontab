@@ -7,7 +7,8 @@ SHELL=/bin/sh
 MAILTO="adi@lazaro.in"
 
 # Research new people
-31		*		*		*		*	research-people.js > research-people.log 2>&1
+JOBNAME="research-people"
+31		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
@@ -19,6 +20,7 @@ SHELL=/bin/sh
 MAILTO="adi@lazaro.in"
 
 # Add poeple as customers to the CRM
-35		*		*		*		*	sync-people-to-crm.js > sync-people-to-crm.log 2>&1
+JOBNAME="sync-people-to-crm"
+35		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
