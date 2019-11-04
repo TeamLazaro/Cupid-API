@@ -15,7 +15,7 @@ let rootDir = __dirname + "/../../..";
  *
  */
 // Our custom imports
-let log = require( `${ rootDir }/lib/logger.js` );
+let logger = require( `${ rootDir }/lib/logger.js` );
 let Call = require( `${ rootDir }/lib/entities/providers/call/Call.js` );
 let Analytics = require( `${ rootDir }/lib/entities/providers/analytics/Analytics.js` );
 let Client = require( `${ rootDir }/lib/entities/Client.js` );
@@ -60,7 +60,7 @@ function main ( router, middleware ) {
 			await client.get();
 		}
 		catch ( e ) {
-			await log.toUs( {
+			await logger.logToUs( {
 				context: `Processing the Log of a Call`,
 				message: e.message + "\n\n" + JSON.stringify( callLog, null, "\t" ),
 			} );
@@ -82,7 +82,7 @@ function main ( router, middleware ) {
 			if ( agent )
 				callData.agentName = agent.name;
 			else {
-				await log.toUs( {
+				await logger.logToUs( {
 					context: `Processing the Log of a Call`,
 					message: `Agent with the phone number ${ callData.agentPhoneNumber } was not found.\nPerson called from the number ${ callData.phoneNumber }`
 				} );
@@ -106,7 +106,7 @@ function main ( router, middleware ) {
 		}
 		catch ( e ) {
 			if ( e.code != 51 )
-				await log.toUs( {
+				await logger.logToUs( {
 					context: `Processing the Log of a Call`,
 					message: `Error outside domain logic:\n${ e.message }`
 				} );
@@ -142,7 +142,7 @@ function main ( router, middleware ) {
 				}
 			}
 			catch ( e ) {
-				await log.toUs( {
+				await logger.logToUs( {
 					context: `Logging a call analytics service "${ provider.name }"`,
 					message: `Error outside domain logic:\n${ e.message }`
 				} );
