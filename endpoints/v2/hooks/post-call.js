@@ -91,12 +91,12 @@ function main ( router, middleware ) {
 			);
 			if ( agent )
 				callData.agentName = agent.name;
-			else {
+			else if ( /^\+?\d+$/.test( callData.agentPhoneNumber ) ) {
 				await logger.logToUs( {
 					context: `Processing the Log of a Call`,
 					message: `Agent with the phone number ${ callData.agentPhoneNumber } was not found.\nPerson called from the number ${ callData.phoneNumber }`
 				} );
-				callData.agentName = callData.agentPhoneNumber;
+					callData.agentName = callData.agentPhoneNumber;
 			}
 		}
 
