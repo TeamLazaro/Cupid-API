@@ -16,6 +16,7 @@ let rootDir = __dirname + "/../../..";
  */
 // Our custom imports
 let logger = require( `${ rootDir }/lib/logger.js` );
+let Log = require( `${ rootDir }/lib/entities/Log.js` );
 let Call = require( `${ rootDir }/lib/entities/providers/call/Call.js` );
 let Analytics = require( `${ rootDir }/lib/entities/providers/analytics/Analytics.js` );
 let Client = require( `${ rootDir }/lib/entities/Client.js` );
@@ -67,6 +68,15 @@ function main ( router, middleware ) {
 			return;
 		}
 
+
+
+		/* -------------------------- \
+		 * 3. Store the raw call log
+		 \--------------------------- */
+		try {
+			await ( new Log( "Calls", callLog ) ).add();
+		}
+		catch ( e ) {}
 
 
 		/* -------------------------- \
