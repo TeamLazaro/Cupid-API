@@ -6,6 +6,19 @@
 SHELL=/bin/sh
 MAILTO="adi@lazaro.in"
 
+# Assign ids to people
+JOBNAME="assign-ids-to-people"
+*		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
+# The following commented lines will be added automatically in the deployment step
+# See post-deploy.sh for reference
+SHELL=/bin/sh
+MAILTO="adi@lazaro.in"
+
 # Research new people
 JOBNAME="research-people"
 31		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
