@@ -109,6 +109,8 @@ function main ( router, middleware ) {
 		let sourcePoint = callData.agentName;
 		let person = new Person( client.slugName, phoneNumber )
 						.cameFrom( "Phone", sourcePoint )
+						.verifiedWith( "Phone" )
+
 
 		let personAlreadyExists = false;
 		try {
