@@ -145,7 +145,7 @@ function main ( router, middleware ) {
 
 				// Log a "conversion" **if** the person **did not** already exist
 				if ( ! personAlreadyExists ) {
-					let conversionURLFragment = `phone/${ call.agentName || call.agentPhoneNumber || "missed" }`;
+					let conversionURLFragment = `phone/${ callData.agentName || callData.agentPhoneNumber || "missed" }`;
 					await tracker.logConversion( conversionURLFragment, {
 						sourceMedium: "phone"
 					} );
