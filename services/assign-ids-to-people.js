@@ -8,8 +8,16 @@
 // Constants
 let rootDir = __dirname + "/..";
 
+/*
+ *
+ * Packages
+ *
+ */
+// Third-party packages
+let axios = require( "axios" );
 // Our custom imports
 let log = require( `${ rootDir }/lib/logger.js` );
+let Environment = require( `${ rootDir }/lib/entities/Environment.js` );
 let Person = require( `${ rootDir }/lib/entities/Person.js` );
 let People = require( `${ rootDir }/lib/entities/People.js` );
 let Client = require( `${ rootDir }/lib/entities/Client.js` );
@@ -52,7 +60,26 @@ process.on( "unhandledRejection", shutdownGracefully );
 
 
 	/*
-	 * 1. Get all people who don't have ids
+	 * 1. Get the relevant data from the environment
+	 */
+	let environment;
+	try {
+		environment = await Environment.get( {
+			"application.internalHTTPAddress": 1
+		} );
+	}
+	catch ( e ) {
+		await log.toUs( {
+			context,
+			message: "Failed to fetch the environment data",
+			data: e
+		} );
+		return;
+	}
+	let internalHTTPAddress = environment.application.internalHTTPAddress;
+
+	/*
+	 * 2. Get all people who don't have ids
 	 */
 	let nowTimestamp = Date.now();
 	let oneMinute = 60 * 1000;
@@ -79,7 +106,7 @@ process.on( "unhandledRejection", shutdownGracefully );
 
 
 	/*
-	 * 2. Assign them ids
+	 * 3. Assign them ids
 	 */
 	let client;
 	while ( await cursor.hasNext() ) {
@@ -128,6 +155,14 @@ process.on( "unhandledRejection", shutdownGracefully );
 			} );
 			return;
 		}
+
+		/*
+		 * C. Trigger the post-assignment hook
+		 */
+		await axios.post( `${ internalHTTPAddress }v2/hooks/post-id-assignment`, {
+			client: person.client,
+			phoneNumber: person.phoneNumber
+		} );
 
 	}
 
