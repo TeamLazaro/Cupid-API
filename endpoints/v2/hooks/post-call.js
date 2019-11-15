@@ -96,7 +96,6 @@ function main ( router, middleware ) {
 					context: `Processing the Log of a Call`,
 					message: `Agent with the phone number ${ callData.agentPhoneNumber } was not found.\nPerson called from the number ${ callData.phoneNumber }`
 				} );
-					callData.agentName = callData.agentPhoneNumber;
 			}
 		}
 
@@ -106,7 +105,7 @@ function main ( router, middleware ) {
 		 * 4. Add a Person if not already in the Database
 		 \------------------------------------------------ */
 		let phoneNumber = callData.phoneNumber;
-		let sourcePoint = callData.agentName;
+		let sourcePoint = callData.agentName || callData.agentPhoneNumber;
 		let person = new Person( client.slugName, phoneNumber )
 						.cameFrom( "Phone", sourcePoint )
 						.verifiedWith( "Phone" )
