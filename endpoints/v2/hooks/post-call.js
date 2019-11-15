@@ -21,6 +21,7 @@ let Call = require( `${ rootDir }/lib/entities/providers/call/Call.js` );
 let Analytics = require( `${ rootDir }/lib/entities/providers/analytics/Analytics.js` );
 let Client = require( `${ rootDir }/lib/entities/Client.js` );
 let Person = require( `${ rootDir }/lib/entities/Person.js` );
+let PersonPhonedWebhook = require( `${ rootDir }/lib/webhooks/person-phoned.js` );
 
 
 /*
@@ -158,6 +159,27 @@ function main ( router, middleware ) {
 					message: `Error outside domain logic:\n${ e.message }`
 				} );
 			}
+		}
+
+
+
+		/* ------------------------- \
+		 * 6. Trigger Webhook Event
+		 \-------------------------- */
+		if ( personAlreadyExists ) {
+			let webhookEvent = new PersonPhonedWebhook( person.client, person.phoneNumber );
+			webhookEvent.attachData( callData );
+			try {
+				await webhookEvent.handle();
+			}
+			catch ( e ) {}
+		}
+		else {
+			person.__dataAtSource = callData;
+			try {
+				await person.update();
+			}
+			catch ( e ) {}
 		}
 
 	} );
