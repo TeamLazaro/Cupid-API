@@ -27,6 +27,11 @@ router = require( "./research-customer-by-crm-id.js" )( router, middleware );
 router = require( "./v1/report-customer-allocation.js" )( router, middleware );
 router = require( "./v1/report-customer-concluded-meetings.js" )( router, middleware );
 
+/*
+ * ----- Infrastructure
+ */
+router = require( "./v2/providers/zoho-renew-api.js" )( router, middleware );
+
 
 
 
