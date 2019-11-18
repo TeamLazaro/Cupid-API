@@ -1,6 +1,19 @@
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
+SHELL=/bin/sh
+MAILTO="adi@lazaro.in"
+
+# Renew Zoho's API keys
+# # every 45 minutes
+*/45		*		*		*		*	curl -X POST http://localhost:9996/v2/provider/zoho/renew 1> zoho-api-renew-out.log 2>> zoho-api-renew-err.log
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
+
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
 # The following commented lines will be added automatically in the deployment step
 # See post-deploy.sh for reference
 SHELL=/bin/sh
