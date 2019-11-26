@@ -113,8 +113,18 @@ function main ( router, middleware ) {
 
 
 
+		/* ------------------------------- \
+		 * 5. Update the in-memory Person
+		 \-------------------------------- */
+		person
+			.hasDeviceIds( deviceId )
+			.hasEmailAddress( ...emailAddresses )
+			.isInterestedIn( ...interests );
+
+
+
 		/* ----------------------------------------------------------- \
-		 * 5. Determine if the code that follows needs to be executed
+		 * 6. Determine if the code that follows needs to be executed
 		 \------------------------------------------------------------ */
 		// A. If the Person does not have an Id
 		if ( ! person.id )
@@ -135,16 +145,6 @@ function main ( router, middleware ) {
 			if ( Date.now() - lastActivity.when < tenMinutes )
 				return;
 		}
-
-
-
-		/* ------------------------------- \
-		 * 6. Update the in-memory Person
-		 \-------------------------------- */
-		person
-			.hasDeviceIds( deviceId )
-			.hasEmailAddress( ...emailAddresses )
-			.isInterestedIn( ...interests );
 
 
 
