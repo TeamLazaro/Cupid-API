@@ -37,41 +37,79 @@ function main ( router, middleware ) {
 		res.header( "Access-Control-Allow-Origin", req.headers.origin );
 		res.header( "Access-Control-Allow-Credentials", "true" );
 
-		// Pull the data from the request
-		let client = req.body.client.toLowerCase();
+
+
+		/* ------------------------------------------- \
+		 * 1. Extract relevant data from the Request
+		 \-------------------------------------------- */
+		let client = req.body.client;
 		let phoneNumber = req.body.phoneNumber;
-		// Optional attributes
 		let source = req.body.source;
-		let deviceId = req.body.deviceId;
-		let verificationMethod = req.body.verificationMethod;
-		let interests = req.body.interests;
 
-
-		/*
-		 * Create a Person
-		 */
-		let person;
-		try {
-			person = new Person( client, phoneNumber );
-		}
-		catch ( e ) {
-			// It's highly likely that the essential details weren't provided
-			res.json( { message: e.message } );
-			res.end();
+		// If the required data has not been provided
+		if ( ! client || ! phoneNumber || ! ( source && source.medium ) ) {
+			res.status( 400 );
+			res.json( {
+				code: 400,
+				message: "Please provide a phone-number, associated client and the source medium."
+			} );
 			return;
 		}
 
-		// Respond back pre-emptively ( and optimistically )
-		res.json( { message: "The person will be added." } );
+		// Make the client name lower-case
+		client = client.toLowerCase();
+
+		// Pull in any optional attributes
+		let deviceId = req.body.deviceId;
+		let verificationMethod = req.body.verificationMethod;
+		let interests = req.body.interests;
+		let emailAddresses = req.body.emailAddresses;
+
+
+
+		/* ----------------------- \
+		 * 2. Validate the data
+		 \------------------------ */
+		if ( ! /^\+\d+/.test( phoneNumber ) )
+			return invalidInputResponse( res, "Please provide a valid phone-number." );
+
+		if ( typeof deviceId != "string" )
+			deviceId = null;
+
+		if ( ! ( interests instanceof Array ) )
+			if ( typeof interests == "string" )
+				interests = [ interests ];
+			else
+				interests = [ ];
+
+		if ( ! ( emailAddresses instanceof Array ) )
+			if ( typeof emailAddresses == "string" )
+				emailAddresses = [ emailAddresses ];
+			else
+				emailAddresses = [ ];
+
+
+
+		/* ---------------- \
+		 * 3. Respond back
+		 \----------------- */
+		res.json( {
+			code: 200,
+			message: "The person will be added."
+		} );
 		res.end();
 
-		/*
-		 * Add the person
-		 */
-		person
-			.cameFrom( source.medium, source.point )
-			.hasDeviceIds( deviceId )
-			.isInterestedIn( interests )
+
+
+		/* -------------------------------------- \
+		 * 4. Add the Person ( to the database )
+		 \--------------------------------------- */
+		// Build a Person object
+		let person = new Person( client, phoneNumber )
+						.cameFrom( source.medium, source.point )
+						.hasDeviceIds( deviceId )
+						.hasEmailAddress( ...emailAddresses )
+						.isInterestedIn( ...interests )
 
 		// Mark if the person is verified
 		if ( verificationMethod )
@@ -79,6 +117,7 @@ function main ( router, middleware ) {
 		else
 			person.unverify();
 
+		// Add the Person to the database
 		try {
 			await person.add();
 		}
@@ -93,4 +132,18 @@ function main ( router, middleware ) {
 
 	return router;
 
+}
+
+
+
+/* ----------------- \
+ * Helper functions
+ \------------------ */
+function invalidInputResponse ( response, message ) {
+	response.status( 422 );
+	response.json( {
+		code: 422,
+		message: message
+	} );
+	response.end();
 }
