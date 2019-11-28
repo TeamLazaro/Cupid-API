@@ -33,6 +33,12 @@ router = require( "./v1/report-customer-concluded-meetings.js" )( router, middle
 router = require( "./v2/providers/zoho-renew-api.js" )( router, middleware );
 
 
+/*
+ * ----- Client's API
+ */
+router = require( "./api/index.js" )( router, middleware );
+
+
 
 
 
