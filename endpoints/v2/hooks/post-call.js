@@ -110,6 +110,7 @@ function main ( router, middleware ) {
 		let person = new Person( client.slugName, phoneNumber )
 						.cameFrom( "Phone", sourcePoint )
 						.verifiedWith( "Phone" )
+						.setSourceProvider( provider )
 
 
 		let personAlreadyExists = false;
