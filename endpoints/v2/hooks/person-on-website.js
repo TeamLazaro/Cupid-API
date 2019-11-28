@@ -22,9 +22,9 @@ let PersonOnWebsiteWebhook = require( `${ rootDir }/lib/webhooks/person-on-websi
 
 
 /*
- * -/-/-/-/-/
- * Add a person
- * -/-/-/-/-/
+ * -/-/-/-/-/-/-/-/-/-
+ * Person on Website
+ * -/-/-/-/-/-/-/-/-/-
  */
 function main ( router, middleware ) {
 
