@@ -113,13 +113,28 @@ function main ( router, middleware ) {
 
 
 
-		/* ------------------------------- \
-		 * 5. Update the in-memory Person
-		 \-------------------------------- */
+		/* -------------------------------------- \
+		 * 5. Update the Person ( if necessary )
+		 \--------------------------------------- */
+		let personShouldBeUpdated = person.deviceIds && ! person.deviceIds.includes( deviceId );
+		// Update the in-memory Person object
 		person
 			.hasDeviceIds( deviceId )
 			.hasEmailAddress( ...emailAddresses )
 			.isInterestedIn( ...interests );
+		// Update the Person in the database
+		if ( personShouldBeUpdated ) {
+			try {
+				await person.update();
+			}
+			catch ( e ) {
+				await log.toUs( {
+					context: `Request to acknowledge Person on the website`,
+					message: "Updating a Person",
+					data: e
+				} );
+			}
+		}
 
 
 
@@ -183,22 +198,6 @@ function main ( router, middleware ) {
 				message: e.message,
 				data: e
 			} )
-		}
-
-
-
-		/* ----------------------------------- \
-		 * 9. Update the Person
-		 \------------------------------------ */
-		try {
-			await person.update();
-		}
-		catch ( e ) {
-			await log.toUs( {
-				context: `Request to acknowledge Person on the website`,
-				message: "Updating a Person",
-				data: e
-			} );
 		}
 
 	} );
