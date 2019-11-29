@@ -21,6 +21,7 @@ let Call = require( `${ rootDir }/lib/entities/providers/call/Call.js` );
 let Analytics = require( `${ rootDir }/lib/entities/providers/analytics/Analytics.js` );
 let Client = require( `${ rootDir }/lib/entities/Client.js` );
 let Person = require( `${ rootDir }/lib/entities/Person.js` );
+let PersonActivity = require( `${ rootDir }/lib/entities/PersonActivity.js` );
 let PersonPhonedWebhook = require( `${ rootDir }/lib/webhooks/person-phoned.js` );
 
 
@@ -134,11 +135,54 @@ function main ( router, middleware ) {
 
 
 
+		/* ------------------------------------ \
+		 * 5. Get the Person from the database
+		 \------------------------------------- */
+		try {
+			await person.get( { id: 1, deviceIds: 1 } );
+		}
+		catch ( e ) {
+			await logger.toUs( {
+				context: "Request to acknowledge Person calling in",
+				message: "Fetching the Person from the database",
+				data: e
+			} );
+		}
+
+
+
+		/* -------------------------- \
+		 * 6. Record a new Activity
+		 \--------------------------- */
+		let activity = new PersonActivity( "person/phoned/" );
+		activity
+			.occurredOn( callData.startTime )
+			.from( "Phone" )
+			.associatedWith( person )
+			.setServiceProvider( provider )
+			.setData( {
+				id: callData.id,
+				agentPhoneNumber: callData.agentPhoneNumber,
+				recordingURL: callData.recordingURL || null
+			} );
+
+		try {
+			await activity.record();
+		}
+		catch ( e ) {
+			await logger.toUs( {
+				context: "Request to acknowledge Person calling in",
+				message: "Recording a new activity",
+				data: e
+			} );
+		}
+
+
+
 		/* ------------------------------------- \
-		 * 5. Track this activity for Analytics
+		 * 7. Track this activity for Analytics
 		 \-------------------------------------- */
 		// A. Get the person's Ids ( if available )
-		await person.get( { id: 1, deviceIds: 1 } );
 		let personId = person.id;
 		let personDeviceId = person.deviceIds && person.deviceIds[ 0 ];
 
@@ -172,7 +216,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------- \
-		 * 6. Trigger Webhook Event
+		 * 8. Trigger Webhook Event
 		 \-------------------------- */
 		if ( personAlreadyExists ) {
 			let webhookEvent = new PersonPhonedWebhook( person.client, person.phoneNumber );
