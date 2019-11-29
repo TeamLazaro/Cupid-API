@@ -114,7 +114,10 @@ function main ( router, middleware ) {
 						.cameFrom( "Phone", sourcePoint )
 						.verifiedWith( "Phone" )
 						.setSourceProvider( provider )
-
+						.setSourceProviderData( {
+							callId: callData.id,
+							recordingURL: callData.recordingURL
+						} )
 
 		let personAlreadyExists = false;
 		try {
