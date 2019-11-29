@@ -84,21 +84,23 @@ function main ( router, middleware ) {
 		 * 3. Interpret the call log
 		 \--------------------------- */
 		let callData = Call.parseLog( provider, callLog );
-		if ( callData.missed )
-			callData.agentName = null;
-		else {
-			let agent = client.people.find(
-				person => person.phoneNumber == callData.agentPhoneNumber
-			);
-			if ( agent )
-				callData.agentName = agent.name;
-			else if ( /^\+?\d+$/.test( callData.agentPhoneNumber ) ) {
-				await logger.logToUs( {
-					context: `Processing the Log of a Call`,
-					message: `Agent with the phone number ${ callData.agentPhoneNumber } was not found.\nPerson called from the number ${ callData.phoneNumber }`
-				} );
-			}
-		}
+		// Derive the name of the agent holding the phone number
+		// 	( disabled for now as it's hard to be accurate )
+		// if ( callData.missed )
+		// 	callData.agentName = null;
+		// else {
+		// 	let agent = client.people.find(
+		// 		person => person.phoneNumber == callData.agentPhoneNumber
+		// 	);
+		// 	if ( agent )
+		// 		callData.agentName = agent.name;
+		// 	else if ( /^\+?\d+$/.test( callData.agentPhoneNumber ) ) {
+		// 		await logger.logToUs( {
+		// 			context: `Processing the Log of a Call`,
+		// 			message: `Agent with the phone number ${ callData.agentPhoneNumber } was not found.\nPerson called from the number ${ callData.phoneNumber }`
+		// 		} );
+		// 	}
+		// }
 
 
 
@@ -106,7 +108,8 @@ function main ( router, middleware ) {
 		 * 4. Add a Person if not already in the Database
 		 \------------------------------------------------ */
 		let phoneNumber = callData.phoneNumber;
-		let sourcePoint = callData.agentName || callData.agentPhoneNumber;
+		// let sourcePoint = callData.agentName || callData.agentPhoneNumber;
+		let sourcePoint = callData.agentPhoneNumber;
 		let person = new Person( client.slugName, phoneNumber )
 						.cameFrom( "Phone", sourcePoint )
 						.verifiedWith( "Phone" )
@@ -148,7 +151,8 @@ function main ( router, middleware ) {
 
 				// Log a "conversion" **if** the person **did not** already exist
 				if ( ! personAlreadyExists ) {
-					let conversionURLFragment = `phone/${ callData.agentName || callData.agentPhoneNumber || "missed" }`;
+					// let conversionURLFragment = `phone/${ callData.agentName || callData.agentPhoneNumber || "missed" }`;
+					let conversionURLFragment = `phone/${ callData.agentPhoneNumber || "missed" }`;
 					await tracker.logConversion( conversionURLFragment, {
 						sourceMedium: "phone"
 					} );
