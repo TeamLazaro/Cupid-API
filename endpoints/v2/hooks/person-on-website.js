@@ -145,7 +145,13 @@ function main ( router, middleware ) {
 		if ( ! person.id )
 			return;
 
-		// B. If the Person's last activity was less than 10 minutes ago
+		// B. If the Person was added less than 10 minutes ago
+		let tenMinutes = 10 * 60 * 1000;
+		if ( person.source.medium.toLowerCase() == "website" )
+			if ( Date.now() - person.createdOn < tenMinutes )
+				return;
+
+		// C. If the Person's last activity was less than 10 minutes ago
 		let personActivity = new PersonActivity( "person/on/website" );
 		personActivity.associatePerson( client, phoneNumber );
 		let lastActivity;
@@ -155,11 +161,9 @@ function main ( router, middleware ) {
 		catch ( e ) {
 			return;
 		}
-		if ( lastActivity._id ) {
-			let tenMinutes = 10 * 60 * 1000;
+		if ( lastActivity._id )
 			if ( Date.now() - lastActivity.when < tenMinutes )
 				return;
-		}
 
 
 
