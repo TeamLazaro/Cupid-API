@@ -159,10 +159,19 @@ process.on( "unhandledRejection", shutdownGracefully );
 		/*
 		 * C. Trigger the post-assignment hook
 		 */
-		await axios.post( `${ internalHTTPAddress }v2/hooks/post-id-assignment`, {
-			client: person.client,
-			phoneNumber: person.phoneNumber
-		} );
+		try {
+			await axios.post( `${ internalHTTPAddress }v2/hooks/post-id-assignment`, {
+				client: person.client,
+				phoneNumber: person.phoneNumber
+			} );
+		}
+		catch ( e ) {
+			await log.toUs( {
+				context,
+				message: `Failed to trigger the post-assignment hook for person with Id ${ person.id } and client ${ person.client }`,
+				data: e
+			} );
+		}
 
 	}
 
