@@ -12,6 +12,9 @@ function main ( router, middleware ) {
 
 	apiRouter.use( middleware.verifyAPIKey );
 
+	// GET /api/v1/people/activities
+	apiRouter = require( "./v1/get-people-activities.js" )( apiRouter, middleware );
+
 	// Use the API router for all `/api/` routes
 	router.use( "/api/v1/", apiRouter );
 
