@@ -18,6 +18,7 @@ let rootDir = __dirname + "/../../..";
 let log = require( `${ rootDir }/lib/logger.js` );
 let Person = require( `${ rootDir }/lib/entities/Person.js` );
 let PersonAddedWebhook = require( `${ rootDir }/lib/webhooks/added-person.js` );
+let PersonActivity = require( `${ rootDir }/lib/entities/PersonActivity.js` );
 
 
 /*
@@ -65,8 +66,53 @@ function main ( router, middleware ) {
 
 
 
+		/* ------------------------- \
+		 * 3. Record a new Activity
+		 \-------------------------- */
+		let source__event__Map = {
+			phone: "person/phoned/",
+			website: "person/on/website"
+		};
+		let event = source__event__Map[ person.source.medium.toLowerCase() ];
+		let activity = new PersonActivity( event );
+		activity.associatedWith( person );
+		// Set the service provider
+		if ( person.source.provider )
+			activity.setServiceProvider( person.source.provider );
+		// Set event-related data
+		if ( event == "person/phoned/" ) {
+			activity
+				.from( "Phone" )
+				.setData( {
+					id: person.source.data.callId,
+					agentPhoneNumber: person.source.point || null,
+					callRecording: person.source.data.recordingURL || null
+				} );
+		}
+		else if ( event == "person/on/website" ) {
+			activity
+				.from( "Website" )
+				.setData( {
+					deviceId: person.deviceIds && person.deviceIds[ 0 ],
+					where: person.source.point
+				} );
+		}
+
+		try {
+			await activity.record();
+		}
+		catch ( e ) {
+			await log.toUs( {
+				context: "Post Id Assignment Hook",
+				message: "Recording a new activity",
+				data: e
+			} );
+		}
+
+
+
 		/* ----------------------- \
-		 * 3. Trigger the Webhook
+		 * 4. Trigger the Webhook
 		 \------------------------ */
 		let webhookEvent = new PersonAddedWebhook( client, phoneNumber );
 		webhookEvent.attachData( person.__dataAtSource );
