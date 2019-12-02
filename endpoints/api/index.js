@@ -21,6 +21,9 @@ function main ( router, middleware ) {
 	// GET /api/v1/people/:id
 	apiRouter = require( "./v1/get-person.js" )( apiRouter, middleware );
 
+	// GET /api/v1/people
+	apiRouter = require( "./v1/get-people.js" )( apiRouter, middleware );
+
 	// Use the API router for all `/api/` routes
 	router.use( "/api/v1/", apiRouter );
 
