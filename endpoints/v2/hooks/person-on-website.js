@@ -153,7 +153,7 @@ function main ( router, middleware ) {
 
 		// C. If the Person's last activity was less than 10 minutes ago
 		let personActivity = new PersonActivity( "person/on/website" );
-		personActivity.associatePerson( client, phoneNumber );
+		personActivity.associatedWith( person );
 		let lastActivity;
 		try {
 			lastActivity = await personActivity.getMostRecent();
@@ -171,9 +171,14 @@ function main ( router, middleware ) {
 		 * 7. Record a new Activity
 		 \-------------------------- */
 		let activity = new PersonActivity( "person/on/website" );
-		activity.associatePerson( client, phoneNumber );
-		activity.setServiceProvider( "Google Analytics" );
-		activity.setData( { deviceId, where } );
+		activity
+			.associatedWith( person )
+			.from( "Website" )
+			.setServiceProvider( "Google Analytics" )
+			.setData( {
+				where: person.source.point,
+				deviceId
+			} );
 
 		try {
 			await activity.record();
