@@ -23,6 +23,7 @@ router = require( "./v2/update-person.js" )( router, middleware );
 router = require( "./v2/hooks/post-call.js" )( router, middleware );
 router = require( "./v2/hooks/post-id-assignment.js" )( router, middleware );
 router = require( "./v2/hooks/person-on-website.js" )( router, middleware );
+router = require( "./v2/webhook-catcher.js" )( router, middleware );
 // router = require( "./v1/report-customer-allocation.js" )( router, middleware );
 // router = require( "./v1/report-customer-concluded-meetings.js" )( router, middleware );
 
