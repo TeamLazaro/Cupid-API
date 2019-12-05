@@ -12,34 +12,38 @@ NVM_DIR=/root/.nvm
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
 
-# Renew Zoho's API keys
-# # every 45 minutes
-*/45		*		*		*		*	curl -X POST http://localhost:9996/v2/provider/zoho/renew 1> zoho-api-renew-out.log 2>> zoho-api-renew-err.log
-
-# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
-
-
-
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
 # Assign ids to people
+# 		# Every minute
 JOBNAME="assign-ids-to-people"
-*		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
+*		*		*		*		*	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && node "$TASKS_DIR/$JOBNAME.js" 1> "$LOG_DIR/$JOBNAME-out.log" 2> "$LOG_DIR/$JOBNAME-err.log"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
+# Renew Zoho's API keys
+# # every 15th and 45th minute of every hour
+# 15,45		*		*		*		*	curl -X POST http://localhost:9996/v2/provider/zoho/renew 1> zoho-api-renew-out.log 2>> zoho-api-renew-err.log
+
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
 # Research new people
-JOBNAME="research-people"
-31		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
+# JOBNAME="research-people"
+# 31		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
 # Add poeple as customers to the CRM
-JOBNAME="sync-people-to-crm"
-35		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
+# JOBNAME="sync-people-to-crm"
+# 35		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
