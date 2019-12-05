@@ -1,8 +1,12 @@
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
+# Global environment constants
 SHELL=/bin/sh
 MAILTO="adi@lazaro.in"
+NVM_DIR=/root/.nvm
+# ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
+
 
 # Renew Zoho's API keys
 # # every 45 minutes
@@ -14,11 +18,6 @@ MAILTO="adi@lazaro.in"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
-# The following commented lines will be added automatically in the deployment step
-# See post-deploy.sh for reference
-SHELL=/bin/sh
-MAILTO="adi@lazaro.in"
-
 # Assign ids to people
 JOBNAME="assign-ids-to-people"
 *		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
@@ -27,11 +26,6 @@ JOBNAME="assign-ids-to-people"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
-# The following commented lines will be added automatically in the deployment step
-# See post-deploy.sh for reference
-SHELL=/bin/sh
-MAILTO="adi@lazaro.in"
-
 # Research new people
 JOBNAME="research-people"
 31		*		*		*		*	pgrep -f "$JOBNAME" &> /dev/null || "$JOBNAME.js" 1> "$JOBNAME-out.log" 2>> "$JOBNAME-err.log"
@@ -39,11 +33,6 @@ JOBNAME="research-people"
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
-
-# The following commented lines will be added automatically in the deployment step
-# See post-deploy.sh for reference
-SHELL=/bin/sh
-MAILTO="adi@lazaro.in"
 
 # Add poeple as customers to the CRM
 JOBNAME="sync-people-to-crm"
