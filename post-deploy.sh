@@ -32,9 +32,9 @@ if [ -f setup/tasks.crontab ]; then
 	# chmod 744 */scheduled-tasks/*
 	chmod 744 services/*
 	# Build a cumulative, consolidated crontab
-	TASKS_DIR="`pwd`/services"
-	LOG_DIR="`pwd`/environment/logs"
-	CRON_ENV="\n\nPATH=/bin:/usr/bin:/usr/local/bin:${TASKS_DIR}\nHOME=${LOG_DIR}\n";
+	TASKS_DIR="TASKS_DIR=`pwd`/services"
+	LOG_DIR="LOG_DIR=`pwd`/environment/logs"
+	CRON_ENV="\n\n${TASKS_DIR}\n${LOG_DIR}\n";
 	find -type f -name '*.crontab' -exec cat {} \; > tmp_crontab;
 	printf $CRON_ENV | cat - tmp_crontab | tee tmp_2_crontab;
 	rm tmp_crontab;
