@@ -85,6 +85,14 @@ function main ( router, middleware ) {
 		 * 3. Interpret the call log
 		 \--------------------------- */
 		let callData = Call.parseLog( provider, callLog );
+
+		// If the call came for another number; i.e. not the IVR number of the client
+		// 	then do not continue
+		let telephonyProvider = client.providers.telephony.find( providerObject => {
+			return providerObject.name.toLowerCase() == provider;
+		} );
+		if ( telephonyProvider.phoneNumber != callData.ivrNumber )
+			return;
 		// Derive the name of the agent holding the phone number
 		// 	( disabled for now as it's hard to be accurate )
 		// if ( callData.missed )
