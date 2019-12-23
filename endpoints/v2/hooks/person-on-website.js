@@ -176,7 +176,7 @@ function main ( router, middleware ) {
 			.from( "Website" )
 			.setServiceProvider( "Google Analytics" )
 			.setData( {
-				where: person.source.point,
+				where: where,
 				deviceId
 			} );
 
