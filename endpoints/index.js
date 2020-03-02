@@ -12,6 +12,7 @@ let { router, middleware } = require( "../lib/routing.js" );
 
 
 router = require( "./v1/status.js" )( router, middleware );
+// router = require( "./v2/http-catcher.js" )( router, middleware );
 router = require( "./v2/test-webhook.js" )( router, middleware );
 router = require( "./get-people.js" )( router, middleware );
 router = require( "./v1/add-person.js" )( router, middleware );

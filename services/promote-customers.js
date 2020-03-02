@@ -67,6 +67,7 @@ process.on( "unhandledRejection", shutdownGracefully );
 	 */
 	let timestamp__CoupleHoursAgo = new Date( Date.now() - 2 * 60 * 60 * 1000 );
 	let peopleRecords = await collection.find( {
+		"__schema": { $ne: 3 },
 			// has not been operated on
 		"actions.introduceToSalespeople": { $ne: true },
 			// does not have an error

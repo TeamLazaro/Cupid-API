@@ -128,6 +128,12 @@ function main ( router, middleware ) {
 							recordingURL: callData.recordingURL
 						} )
 
+		// Temporary
+		if ( callData.recordingURL ) {
+			person.other = person.other || { };
+			person.other.initialCallRecordingURL = callData.recordingURL;
+		}
+
 		let personAlreadyExists = false;
 		try {
 			await person.add();
