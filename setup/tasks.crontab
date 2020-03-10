@@ -17,7 +17,7 @@ NVM_DIR=/root/.nvm
 # Assign ids to people
 # 		# Every minute
 JOBNAME="assign-ids-to-people"
-*		*		*		*		*	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && node "$TASKS_DIR/$JOBNAME.js" 1> "$LOG_DIR/$JOBNAME-out.log" 2> "$LOG_DIR/$JOBNAME-err.log"
+*		*		*		*		*	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && node "$SERVICES_DIR/$JOBNAME.js" 1> "$LOG_DIR/$JOBNAME-out.log" 2> "$LOG_DIR/$JOBNAME-err.log"
 
 # ~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~/~
 

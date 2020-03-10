@@ -1,28 +1,46 @@
 
 #! /bin/bash
 
+# Extract the project name from the arguments
 while getopts "p:" opt; do
 	case ${opt} in
 		p )
-			PROJECT_DIR=${OPTARG}
+			PROJECT_NAME=${OPTARG}
 			;;
 	esac
 done
 
-# Establish a symbolic link for the environment directory:
-rm environment
-mkdir -p ../environment/${PROJECT_DIR}
-ln -s ../environment/${PROJECT_DIR} environment
+
+# -/-/-/-/-
+# Set up the environment directory
+# -/-/-/-/-
+# Re-establish the symbolic link
+unlink environment
+mkdir -p ../environment/${PROJECT_NAME}
+ln -s ../environment/${PROJECT_NAME} environment
+# Initialize the "scheduled-tasks" and "logs" directories if they aren't already present
+mkdir -p environment/scheduled-tasks
+mkdir -p environment/logs
+
+
+# -/-/-/-/-
+# Initialize the nodeJS environment
+# -/-/-/-/-
+[ -s "/root/.nvm/nvm.sh" ] && \. "/root/.nvm/nvm.sh"
+
+
 
 # -/-/-/-/-
 # Install the third-party packages
 # -/-/-/-/-
 npm install
 
+
 # -/-/-/-/-
 # Reload the node processes
 # -/-/-/-/-
 pm2 reload "cupid"
+
 
 # -/-/-/-/-
 # Set up all the scheduled tasks
@@ -32,15 +50,19 @@ if [ -f setup/tasks.crontab ]; then
 	# chmod 744 */scheduled-tasks/*
 	chmod 744 services/*
 	# Build a cumulative, consolidated crontab
-	TASKS_DIR="TASKS_DIR=`pwd`/services"
-	LOG_DIR="LOG_DIR=`pwd`/environment/logs"
-	CRON_ENV="\n\n${TASKS_DIR}\n${LOG_DIR}\n";
+	PROJECT_DIR="`pwd`"
+	SERVICES_DIR="$PROJECT_DIR/services"
+	LOG_DIR="$PROJECT_DIR/environment/logs"
+	# ENV_PATH="${TASKS_DIR}:/usr/local/bin:/usr/bin:/bin"
+	# ENV_HOME="${LOG_DIR}"
+	# CRONTAB_ENV_VARS="\n\n${ENV_PATH}\nHOME=${ENV_HOME}\n";
+	CRONTAB_ENV_VARS="\nSERVICES_DIR=${SERVICES_DIR}\nLOG_DIR=${LOG_DIR}\n";
 	find -type f -name '*.crontab' -exec cat {} \; > tmp_crontab;
-	printf $CRON_ENV | cat - tmp_crontab | tee tmp_2_crontab;
+	printf $CRONTAB_ENV_VARS | cat - tmp_crontab | tee tmp_2_crontab;
 	rm tmp_crontab;
 
 	# Copy the consolidated scheduled tasks file to the environment
-	mv tmp_2_crontab environment/scheduled-tasks/$PROJECT_DIR.crontab
+	mv tmp_2_crontab environment/scheduled-tasks/$PROJECT_NAME.crontab
 	# Re-establish all the scheduled tasks for the entire system
 	cat environment/scheduled-tasks/*.crontab | crontab -
 fi
