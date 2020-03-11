@@ -61,7 +61,6 @@ function main ( router, middleware ) {
 
 		// Pull in any optional attributes
 		let deviceId = req.body.deviceId;
-		let verificationMethod = req.body.verificationMethod;
 		let interests = req.body.interests;
 		let emailAddresses = req.body.emailAddresses;
 
@@ -110,12 +109,7 @@ function main ( router, middleware ) {
 						.hasDeviceIds( deviceId )
 						.hasEmailAddress( ...emailAddresses )
 						.isInterestedIn( ...interests )
-
-		// Mark if the person is verified
-		if ( verificationMethod )
-			person.verifiedWith( verificationMethod );
-		else
-			person.unverify();
+						.unverify()
 
 		// Add the Person to the database
 		try {
