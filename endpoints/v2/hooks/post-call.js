@@ -121,7 +121,6 @@ function main ( router, middleware ) {
 		let sourcePoint = callData.agentPhoneNumber;
 		let person = new Person( client.slugName, phoneNumber )
 						.cameFrom( "Phone", sourcePoint )
-						.verifiedWith( "Phone" )
 						.setSourceProvider( provider )
 						.setSourceProviderData( {
 							callId: callData.id,
@@ -240,6 +239,17 @@ function main ( router, middleware ) {
 				await person.update();
 			}
 			catch ( e ) {}
+		}
+
+		try {
+			await Person.verify( person, "Phone" );
+		}
+		catch ( e ) {
+			await logger.toUs( {
+				context: "Endpoint: /v2/hooks/post-call",
+				message: "Verifying Person >> " + e.message,
+				data: e
+			} );
 		}
 
 	} );
