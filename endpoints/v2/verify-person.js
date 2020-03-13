@@ -15,6 +15,7 @@ let rootDir = __dirname + "/../..";
  *
  */
 // Our custom imports
+let logger = require( `${ rootDir }/lib/logger.js` );
 let dbms = require( `${ rootDir }/lib/dbms.js` );
 let Person = require( `${ rootDir }/lib/entities/Person.js` );
 
@@ -61,9 +62,18 @@ function main ( router, middleware ) {
 				// skip to the next phone number
 			if ( ! person._id )
 				continue;
-			// Mark the person "verified"
-			person.verifiedWith( verificationMethod );
-			await person.update();
+
+			try {
+				await Person.verify( person, verificationMethod, person.source.medium );
+			}
+			catch ( e ) {
+				await logger.toUs( {
+					context: "Endpoint: /v2/people/verify",
+					message: "Verifying Person >> " + e.message,
+					data: e
+				} );
+			}
+
 			break;
 		}
 
