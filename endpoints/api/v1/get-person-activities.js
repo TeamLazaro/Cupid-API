@@ -15,11 +15,9 @@ let rootDir = __dirname + "/../../..";
  *
  */
 // Third-party packages
-let { DateTime } = require( "luxon" );
 let { ObjectId } = require( "mongodb" );
 // Our custom imports
 let log = require( `${ rootDir }/lib/logger.js` );
-// let datetime = require( `${ rootDir }/lib/datetime.js` );
 let PersonActivity = require( `${ rootDir }/lib/entities/PersonActivity.js` );
 let Person = require( `${ rootDir }/lib/entities/Person.js` );
 let People = require( `${ rootDir }/lib/entities/People.js` );
