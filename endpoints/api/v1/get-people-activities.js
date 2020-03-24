@@ -53,17 +53,8 @@ function main ( router, middleware ) {
 		/* ------------------------------------------- \
 		 * 2. Extract relevant data from the Request
 		 \-------------------------------------------- */
-		let date = req.query.date;
+		let date = req.query.date || "today";
 		let page_cursor = req.query.page_cursor;
-		// If the required data has not been provided
-		if ( ! date ) {
-			res.status( 400 );
-			res.json( {
-				code: 400,
-				message: "Please provide a date."
-			} );
-			return;
-		}
 
 
 
