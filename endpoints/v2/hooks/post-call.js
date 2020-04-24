@@ -72,6 +72,26 @@ function main ( router, middleware ) {
 		}
 
 
+
+		/* ------------------------------------------- \
+		 *  Determine the Call Provider
+		 \-------------------------------------------- */
+		if ( provider.trim() === "" )
+			return invalidInputResponse( res, "No IVR provider name was provided." );
+		try {
+			Call.getProvider( provider );
+		}
+		catch ( e ) {
+			await logger.logToUs( {
+				context: `Processing the Log of a Call`,
+				message: e.message,
+			} );
+			invalidInputResponse( res, `The provider "${ provider }" is not supported.` );
+			return;
+		}
+
+
+
 		/* ------------------------------ \
 		 *  Respond back to the client
 		 \------------------------------- */
