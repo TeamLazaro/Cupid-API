@@ -44,7 +44,7 @@ function main ( router, middleware ) {
 		res.header( "Access-Control-Allow-Credentials", "true" );
 
 		/* ------------------------------------------- \
-		 * 1. Extract relevant data from the Request
+		 *  Extract relevant data from the Request
 		 \-------------------------------------------- */
 		let provider = ( req.query.provider || req.params.provider || req.header( "x-provider" ) || "" ).toLowerCase();
 		let callLog = req.body;
@@ -52,7 +52,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------ \
-		 * 2. Determine the client
+		 *  Determine the client
 		 \------------------------- */
 		let clientName = ( req.query.client || req.params.client || req.header( "x-client" ) || "" ).toLowerCase();
 		if ( clientName.trim() === "" )
@@ -73,7 +73,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------------ \
-		 * 3. Respond back to the client
+		 *  Respond back to the client
 		 \------------------------------- */
 		// pre-emptively, and optimistically
 		successResponse( res, "The call log has been received and will be processed shortly." );
@@ -81,7 +81,7 @@ function main ( router, middleware ) {
 
 
 		/* -------------------------- \
-		 * 4. Store the raw call log
+		 *  Store the raw call log
 		 \--------------------------- */
 		try {
 			await ( new Log( "Calls", callLog ) ).add();
@@ -90,7 +90,7 @@ function main ( router, middleware ) {
 
 
 		/* -------------------------- \
-		 * 5. Interpret the call log
+		 *  Interpret the call log
 		 \--------------------------- */
 		let callData = Call.parseLog( provider, callLog );
 
@@ -122,7 +122,7 @@ function main ( router, middleware ) {
 
 
 		/* ----------------------------------------------- \
-		 * 6. Add a Person if not already in the Database
+		 *  Add a Person if not already in the Database
 		 \------------------------------------------------ */
 		let phoneNumber = callData.phoneNumber;
 		// let sourcePoint = callData.agentName || callData.agentPhoneNumber;
@@ -151,7 +151,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------------------ \
-		 * 7. Get the Person from the database
+		 *  Get the Person from the database
 		 \------------------------------------- */
 		try {
 			await person.get( { id: 1, deviceIds: 1 } );
@@ -167,7 +167,7 @@ function main ( router, middleware ) {
 
 
 		/* -------------------------- \
-		 * 8. Record a new Activity
+		 *  Record a new Activity
 		 \--------------------------- */
 		let activity = new PersonActivity( "person/phoned/" );
 		activity
@@ -195,7 +195,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------------------- \
-		 * 9. Track this activity for Analytics
+		 *  Track this activity for Analytics
 		 \-------------------------------------- */
 		// A. Get the person's Ids ( if available )
 		let personId = person.id;
@@ -231,7 +231,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------- \
-		 * 10. Trigger Webhook Event
+		 *  Trigger Webhook Event
 		 \-------------------------- */
 		if ( personAlreadyExists ) {
 			let webhookEvent = new PersonPhonedWebhook( person.client, person.phoneNumber );
