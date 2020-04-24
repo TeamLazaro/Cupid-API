@@ -47,6 +47,7 @@ function main ( router, middleware ) {
 		 *  Extract relevant data from the Request
 		 \-------------------------------------------- */
 		let provider = ( req.query.provider || req.params.provider || req.header( "x-provider" ) || "" ).toLowerCase();
+		let clientName = ( req.query.client || req.params.client || req.header( "x-client" ) || "" ).toLowerCase();
 		let callLog = req.body;
 
 
@@ -54,7 +55,6 @@ function main ( router, middleware ) {
 		/* ------------------------ \
 		 *  Determine the client
 		 \------------------------- */
-		let clientName = ( req.query.client || req.params.client || req.header( "x-client" ) || "" ).toLowerCase();
 		if ( clientName.trim() === "" )
 			return invalidInputResponse( res, "No client name was provided." );
 
