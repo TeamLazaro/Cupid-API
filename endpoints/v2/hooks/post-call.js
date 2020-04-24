@@ -16,7 +16,7 @@ let rootDir = __dirname + "/../../..";
  */
 // Our custom imports
 let logger = require( `${ rootDir }/lib/logger.js` );
-let { successResponse } = require( `${ rootDir }/lib/http.js` );
+let { successResponse, invalidInputResponse } = require( `${ rootDir }/lib/http.js` );
 let Log = require( `${ rootDir }/lib/entities/Log.js` );
 let Call = require( `${ rootDir }/lib/entities/providers/call/Call.js` );
 let Analytics = require( `${ rootDir }/lib/entities/providers/analytics/Analytics.js` );
@@ -43,9 +43,6 @@ function main ( router, middleware ) {
 		res.header( "Access-Control-Allow-Origin", req.headers.origin );
 		res.header( "Access-Control-Allow-Credentials", "true" );
 
-		// Respond back pre-emptively ( and optimistically )
-		successResponse( res, "The call log has been received and will be processed shortly." );
-
 		/* ------------------------------------------- \
 		 * 1. Extract relevant data from the Request
 		 \-------------------------------------------- */
@@ -54,10 +51,13 @@ function main ( router, middleware ) {
 
 
 
-		/* ----------------------- \
+		/* ------------------------ \
 		 * 2. Determine the client
-		 \----------------------- */
+		 \------------------------- */
 		let clientName = ( req.query.client || req.params.client || req.header( "x-client" ) || "" ).toLowerCase();
+		if ( clientName.trim() === "" )
+			return invalidInputResponse( res, "No client name was provided." );
+
 		let client = new Client( clientName );
 		try {
 			await client.get();
@@ -67,13 +67,21 @@ function main ( router, middleware ) {
 				context: `Processing the Log of a Call`,
 				message: e.message + "\n\n" + JSON.stringify( callLog, null, "\t" ),
 			} );
+			invalidInputResponse( res, "No record of the provided client is present." );
 			return;
 		}
 
 
+		/* ------------------------------ \
+		 * 3. Respond back to the client
+		 \------------------------------- */
+		// pre-emptively, and optimistically
+		successResponse( res, "The call log has been received and will be processed shortly." );
+
+
 
 		/* -------------------------- \
-		 * 3. Store the raw call log
+		 * 4. Store the raw call log
 		 \--------------------------- */
 		try {
 			await ( new Log( "Calls", callLog ) ).add();
@@ -82,7 +90,7 @@ function main ( router, middleware ) {
 
 
 		/* -------------------------- \
-		 * 3. Interpret the call log
+		 * 5. Interpret the call log
 		 \--------------------------- */
 		let callData = Call.parseLog( provider, callLog );
 
@@ -114,7 +122,7 @@ function main ( router, middleware ) {
 
 
 		/* ----------------------------------------------- \
-		 * 4. Add a Person if not already in the Database
+		 * 6. Add a Person if not already in the Database
 		 \------------------------------------------------ */
 		let phoneNumber = callData.phoneNumber;
 		// let sourcePoint = callData.agentName || callData.agentPhoneNumber;
@@ -143,7 +151,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------------------ \
-		 * 5. Get the Person from the database
+		 * 7. Get the Person from the database
 		 \------------------------------------- */
 		try {
 			await person.get( { id: 1, deviceIds: 1 } );
@@ -159,7 +167,7 @@ function main ( router, middleware ) {
 
 
 		/* -------------------------- \
-		 * 6. Record a new Activity
+		 * 8. Record a new Activity
 		 \--------------------------- */
 		let activity = new PersonActivity( "person/phoned/" );
 		activity
@@ -187,7 +195,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------------------- \
-		 * 7. Track this activity for Analytics
+		 * 9. Track this activity for Analytics
 		 \-------------------------------------- */
 		// A. Get the person's Ids ( if available )
 		let personId = person.id;
@@ -223,7 +231,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------- \
-		 * 8. Trigger Webhook Event
+		 * 10. Trigger Webhook Event
 		 \-------------------------- */
 		if ( personAlreadyExists ) {
 			let webhookEvent = new PersonPhonedWebhook( person.client, person.phoneNumber );
