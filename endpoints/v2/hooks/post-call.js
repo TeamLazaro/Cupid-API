@@ -16,6 +16,7 @@ let rootDir = __dirname + "/../../..";
  */
 // Our custom imports
 let logger = require( `${ rootDir }/lib/logger.js` );
+let { successResponse } = require( `${ rootDir }/lib/http.js` );
 let Log = require( `${ rootDir }/lib/entities/Log.js` );
 let Call = require( `${ rootDir }/lib/entities/providers/call/Call.js` );
 let Analytics = require( `${ rootDir }/lib/entities/providers/analytics/Analytics.js` );
@@ -43,8 +44,7 @@ function main ( router, middleware ) {
 		res.header( "Access-Control-Allow-Credentials", "true" );
 
 		// Respond back pre-emptively ( and optimistically )
-		res.json( { message: "The call log has been received and will be processed shortly." } );
-		res.end();
+		successResponse( res, "The call log has been received and will be processed shortly." );
 
 		/* ------------------------------------------- \
 		 * 1. Extract relevant data from the Request
