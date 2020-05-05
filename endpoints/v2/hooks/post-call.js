@@ -48,7 +48,7 @@ function main ( router, middleware ) {
 		 \-------------------------------------------- */
 		let provider = ( req.query.provider || req.params.provider || req.header( "x-provider" ) || "" ).toLowerCase();
 		let clientName = ( req.query.client || req.params.client || req.header( "x-client" ) || "" ).toLowerCase();
-		let callLog = req.body;
+		let callLog = Object.assign( { }, req.body, req.query );
 
 
 
