@@ -40,7 +40,7 @@ function main ( router, middleware ) {
 
 
 		/* ------------------------------------------- \
-		 * 1. Extract relevant data from the Request
+		 *  Extract relevant data from the Request
 		 \-------------------------------------------- */
 		let client = req.body.client;
 		let phoneNumber = req.body.phoneNumber;
@@ -67,7 +67,7 @@ function main ( router, middleware ) {
 
 
 		/* ----------------------- \
-		 * 2. Validate the data
+		 *  Validate the data
 		 \------------------------ */
 		if ( ! /^\+\d+/.test( phoneNumber ) )
 			return invalidInputResponse( res, "Please provide a valid phone-number." );
@@ -90,7 +90,7 @@ function main ( router, middleware ) {
 
 
 		/* ---------------- \
-		 * 3. Respond back
+		 *  Respond back
 		 \----------------- */
 		res.json( {
 			code: 200,
@@ -101,7 +101,7 @@ function main ( router, middleware ) {
 
 
 		/* -------------------------------------- \
-		 * 4. Add the Person ( to the database )
+		 *  Add the Person ( to the database )
 		 \--------------------------------------- */
 		// Build a Person object
 		let person = new Person( client, phoneNumber )
