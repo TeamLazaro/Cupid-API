@@ -46,17 +46,22 @@ process.on( "SIGINT", function ( signal, code ) {
 async function shutdownGracefully ( e ) {
 
 	let context = "There was an uncaught error or unhandled rejection";
-	let message = e.toString();
-	if ( e.stack )
-		message += "\n```\n" + e.stack + "\n```";
 
-	if ( log && log.toUs )
-		await log.toUs( {
-			context: context,
-			message: message
-		} );
+	if ( process.env.NODE_ENV === "production" ) {
+		let message = e.toString();
+		if ( e.stack )
+			message += "\n```\n" + e.stack + "\n```";
 
-	console.error( context + "\n" + message );
+		if ( log && log.toUs )
+			await log.toUs( {
+				context: context,
+				message: message,
+				data: e
+			} );
+	}
+	else {
+		console.error( e );
+	}
 
 	setTimeout( function () {
 		console.log( "Terminating process right now." );
