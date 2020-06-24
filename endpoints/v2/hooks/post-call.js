@@ -28,7 +28,7 @@ let PersonPhonedWebhook = require( `${ rootDir }/lib/webhooks/person-phoned.js` 
 
 /*
  * -/-/-/-/-/
- * Add a person
+ * Post-Call
  * -/-/-/-/-/
  */
 function main ( router, middleware ) {
@@ -37,7 +37,7 @@ function main ( router, middleware ) {
 	router.options( "/v2/hooks/post-call/:provider?/:client?", middleware.allowPreFlightRequest );
 
 
-	router.post( "/v2/hooks/post-call/:provider?/:client?", async function ( req, res ) {
+	router.all( "/v2/hooks/post-call/:provider?/:client?", async function ( req, res ) {
 
 		// res.header( "Access-Control-Allow-Origin", "*" );
 		res.header( "Access-Control-Allow-Origin", req.headers.origin );
@@ -107,6 +107,7 @@ function main ( router, middleware ) {
 			await ( new Log( "Calls", callLog ) ).add();
 		}
 		catch ( e ) {}
+
 
 
 		/* -------------------------- \
