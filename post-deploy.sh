@@ -41,6 +41,10 @@ npm install
 # -/-/-/-/-
 # # Cupid Core
 pm2 reload "cupid"
+# # Webhook Processor
+# # Not going to reload this as it will automatically pickup the new changes on its next run
+# # NODE_ENV=production pm2 start services/push-webhooks.js --name="cupid-webhook-processor" -i 1 --wait-ready --kill-timeout 45000 --restart-delay=9000
+
 
 
 # -/-/-/-/-
