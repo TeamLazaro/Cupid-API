@@ -48,6 +48,7 @@ function main ( router, middleware ) {
 		 \-------------------------------------------- */
 		let provider = ( req.query.provider || req.params.provider || req.header( "x-provider" ) || "" ).toLowerCase();
 		let clientName = ( req.query.client || req.params.client || req.header( "x-client" ) || "" ).toLowerCase();
+		let interests = req.query.interests || req.body.interests || [ ];
 		let callLog = Object.assign( { }, req.body, req.query );
 
 
@@ -151,6 +152,7 @@ function main ( router, middleware ) {
 		let person = new Person( client.slugName, phoneNumber )
 						.cameFrom( "Phone", sourcePoint )
 						.setSourceProvider( provider )
+						.isInterestedIn( ...interests )
 						.setSourceProviderData( {
 							callId: callData.id,
 							recordingURL: callData.recordingURL
@@ -187,6 +189,19 @@ function main ( router, middleware ) {
 
 
 
+		/* ------------------------------------ \
+		 *  Append the interest to the Person
+		 \------------------------------------- */
+		if ( personAlreadyExists ) {
+			person.isInterestedIn( ...interests );
+			try {
+				await person.update();
+			}
+			catch ( e ) {}
+		}
+
+
+
 		/* -------------------------- \
 		 *  Record a new Activity
 		 \--------------------------- */
@@ -197,6 +212,7 @@ function main ( router, middleware ) {
 			.associatedWith( person )
 			.setServiceProvider( provider )
 			.setData( {
+				interests: interests,
 				id: callData.id,
 				agentPhoneNumber: callData.agentPhoneNumber,
 				recordingURL: callData.recordingURL || null
@@ -256,7 +272,7 @@ function main ( router, middleware ) {
 		 \-------------------------- */
 		if ( personAlreadyExists ) {
 			let webhookEvent = new PersonPhonedWebhook( person.client, person.phoneNumber );
-			webhookEvent.attachData( callData );
+			webhookEvent.attachData( { ...callData, interests } );
 			try {
 				await webhookEvent.handle();
 			}
