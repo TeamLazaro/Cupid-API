@@ -19,7 +19,7 @@ let logger = require( `${ rootDir }/lib/logger.js` );
 let { successResponse, invalidInputResponse } = require( `${ rootDir }/lib/http.js` );
 let Log = require( `${ rootDir }/lib/entities/Log.js` );
 let Call = require( `${ rootDir }/lib/entities/providers/call/Call.js` );
-let Analytics = require( `${ rootDir }/lib/entities/providers/analytics/Analytics.js` );
+let AnalyticsLogging = require( `${ rootDir }/lib/entities/providers/analytics-logging/Analytics.js` );
 let Client = require( `${ rootDir }/lib/entities/Client.js` );
 let Person = require( `${ rootDir }/lib/entities/Person.js` );
 let PersonActivity = require( `${ rootDir }/lib/entities/PersonActivity.js` );
@@ -239,9 +239,9 @@ function main ( router, middleware ) {
 		let personDeviceId = person.deviceIds && person.deviceIds[ 0 ];
 
 		// B. Iterate over all the registered analytics providers
-		let analyticsProviders = client.providers.analytics || [ ];
+		let analyticsProviders = client.providers.analyticsLogging || [ ];
 		for ( let provider of analyticsProviders ) {
-			let Service = Analytics.getService( provider.name );
+			let Service = AnalyticsLogging.getService( provider.name );
 			let tracker = new Service( provider.api, personId, personDeviceId );
 			// C. Log the activity ( and conversion if required )
 			try {
