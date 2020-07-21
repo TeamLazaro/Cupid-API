@@ -101,7 +101,7 @@ process.on( "unhandledRejection", shutdownGracefully );
 		cursor,
 		numberOfRecords,
 		pageSize
-	} = await People.get( query, projection );
+	} = await People.getRaw( query, projection );
 
 
 

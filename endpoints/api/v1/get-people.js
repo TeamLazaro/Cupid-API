@@ -136,7 +136,7 @@ function main ( router, middleware ) {
 				cursor,
 				numberOfRecords,
 				pageSize
-			} = await People.get( criteria, projection );
+			} = await People.getRaw( criteria, projection );
 			people = await cursor.toArray();
 			if ( numberOfRecords > pageSize ) {
 				newPageCursor = {
