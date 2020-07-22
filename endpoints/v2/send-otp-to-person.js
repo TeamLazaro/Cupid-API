@@ -16,7 +16,7 @@ let rootDir = __dirname + "/../..";
  */
 // Our custom imports
 let logger = require( `${ rootDir }/lib/logger.js` );
-let { successResponse, invalidInputResponse, notFoundResponse } = require( `${ rootDir }/lib/http.js` );
+let { successResponse, invalidInputResponse, notFoundResponse, serverErrorResponse } = require( `${ rootDir }/lib/http.js` );
 let Client = require( `${ rootDir }/lib/entities/Client.js` );
 let OTP = require( `${ rootDir }/lib/entities/providers/otp/OTP.js` );
 
