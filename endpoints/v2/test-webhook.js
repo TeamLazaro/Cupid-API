@@ -95,12 +95,20 @@ function main ( router, middleware ) {
 		res.end();
 
 		// c. Now, handle the webhook event
-		let webhookEvent = new WebhookEvent();
-		webhookEvent.setRecipients( { address } );
-		try {
-			await webhookEvent.handle();
+		if ( WebhookEvent.simulate ) {
+			try {
+				await WebhookEvent.simulate( { address } );
+			}
+			catch ( e ) {}
 		}
-		catch ( e ) {}
+		else {
+			let webhookEvent = new WebhookEvent();
+			webhookEvent.setRecipients( { address } );
+			try {
+				await webhookEvent.handle();
+			}
+			catch ( e ) {}
+		}
 
 	} );
 
