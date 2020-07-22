@@ -177,7 +177,7 @@ function main ( router, middleware ) {
 		 *  Get the Person from the database
 		 \------------------------------------- */
 		try {
-			await person.get( { id: 1, deviceIds: 1 } );
+			await person.get( { id: 1, deviceIds: 1, interests: 1 } );
 		}
 		catch ( e ) {
 			await logger.toUs( {
