@@ -141,7 +141,7 @@ function main ( router, middleware ) {
 		};
 		let webhookEvent = new Webhook( "person/made/purchase", resource, webhookData );
 		try {
-			webhookEvent.addToQueue();
+			await webhookEvent.addToQueue();
 		}
 		catch ( e ) {
 			await logger.toUs( {
