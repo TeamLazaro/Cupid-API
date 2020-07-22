@@ -67,6 +67,7 @@ function main ( router, middleware ) {
 			await logger.logToUs( {
 				context: `Processing the Log of a Call`,
 				message: e.message + "\n\n" + JSON.stringify( callLog, null, "\t" ),
+				data: callLog
 			} );
 			invalidInputResponse( res, "No record of the provided client is present." );
 			return;
