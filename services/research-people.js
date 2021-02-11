@@ -116,47 +116,47 @@ process.on( "unhandledRejection", shutdownGracefully );
 		/*
 		 * B. Search for information
 		 */
-		let phoneNumbers = [ person.phoneNumber ].concat( ( person.contact && person.contact.otherPhoneNumbers ) || [ ] );
-		let emailAddresses = [ person.emailAddress ].concat( ( person.contact && person.contact.otherEmailAddresses ) || [ ] );
-		try {
-			informationOnPeople = await people.getDataOnPerson( phoneNumbers, emailAddresses );
-		}
-		catch ( e ) {
-				// Log the error
-			await log.toUs( {
-				context: context,
-				message: `Querying information on a person ( id ${ person._id.toString() } )\n${ e.message }` + "\n```\n" + e.stack + "\n```"
-			} );
-				// Update the person record with the error flag
-			await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
-			continue;
-		}
-		if ( informationOnPeople.people.length === 0 ) {
-			// await log.toUs( {
-			// 	context: context,
-			// 	message: `Querying information on a person ( id ${ person._id.toString() } )\nNo information found on the person.\n${ e.message }`
-			// } );
-		}
-		else if ( informationOnPeople.people.length > 1 ) {
-			// await log.toUs( {
-			// 	context: context,
-			// 	message: `Querying information on a person ( id ${ person._id.toString() } )\nMore than one match found for the person.\n${ e.message }`
-			// } );
-			await collection.updateOne( { _id: person._id }, { $set: {
-				"meta.pipl.searchPointers": informationOnPeople.people.map( person => person[ "@search_pointer" ] )
-			} } );
-		}
-		else {
-			// person = Object.assign( person, informationOnPeople.people[ 0 ] );
-			await collection.updateOne( {
-				_id: person._id
-			}, { $set: informationOnPeople.people[ 0 ] } );
-		}
+		// let phoneNumbers = [ person.phoneNumber ].concat( ( person.contact && person.contact.otherPhoneNumbers ) || [ ] );
+		// let emailAddresses = [ person.emailAddress ].concat( ( person.contact && person.contact.otherEmailAddresses ) || [ ] );
+		// try {
+		// 	informationOnPeople = await people.getDataOnPerson( phoneNumbers, emailAddresses );
+		// }
+		// catch ( e ) {
+		// 		// Log the error
+		// 	await log.toUs( {
+		// 		context: context,
+		// 		message: `Querying information on a person ( id ${ person._id.toString() } )\n${ e.message }` + "\n```\n" + e.stack + "\n```"
+		// 	} );
+		// 		// Update the person record with the error flag
+		// 	await collection.updateOne( { _id: person._id }, { $set: { "meta.error": true } } );
+		// 	continue;
+		// }
+		// if ( informationOnPeople.people.length === 0 ) {
+		// 	// await log.toUs( {
+		// 	// 	context: context,
+		// 	// 	message: `Querying information on a person ( id ${ person._id.toString() } )\nNo information found on the person.\n${ e.message }`
+		// 	// } );
+		// }
+		// else if ( informationOnPeople.people.length > 1 ) {
+		// 	// await log.toUs( {
+		// 	// 	context: context,
+		// 	// 	message: `Querying information on a person ( id ${ person._id.toString() } )\nMore than one match found for the person.\n${ e.message }`
+		// 	// } );
+		// 	await collection.updateOne( { _id: person._id }, { $set: {
+		// 		"meta.pipl.searchPointers": informationOnPeople.people.map( person => person[ "@search_pointer" ] )
+		// 	} } );
+		// }
+		// else {
+		// 	// person = Object.assign( person, informationOnPeople.people[ 0 ] );
+		// 	await collection.updateOne( {
+		// 		_id: person._id
+		// 	}, { $set: informationOnPeople.people[ 0 ] } );
+		// }
 
-		await collection.updateOne( { _id: person._id }, { $set: {
-			"actions.gatherInformation": true,
-			"meta.fetchedInformationOn": new Date()
-		} } );
+		// await collection.updateOne( { _id: person._id }, { $set: {
+		// 	"actions.gatherInformation": true,
+		// 	"meta.fetchedInformationOn": new Date()
+		// } } );
 
 		/*
 		 * C. Finally, ackowledge that the research has been complete
