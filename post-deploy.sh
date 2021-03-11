@@ -33,7 +33,7 @@ mkdir -p environment/logs
 # -/-/-/-/-
 # Install the third-party packages
 # -/-/-/-/-
-npm install
+npm ci
 
 
 # -/-/-/-/-
